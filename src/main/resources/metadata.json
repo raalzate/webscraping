@@ -1,0 +1,48 @@
+{
+
+ "consultarSolicitudesAfp": {
+   "type": "consult",
+   "action": "https://www.bonospensionales.gov.co/BonosPensionales/servlet/ServletProcesar",
+   "method": "POST",
+   "data": {
+     "impr": "true",
+     "afplog": "2",
+     "cadenaAfps": "02",
+     "nitsAutorizados": "800138188",
+     "accion": "consultarSolicitudes",
+     "pcont": "null",
+     "nit": "800138188",
+     "perfil": "USU_AFP2",
+     "nombrePantallaJsp": "ConsultarSolicitudesAfp.jsp",
+     "tipoDocumento": "{__TYPE_DOC__}",
+     "documento": "{__NUM_DOC__}",
+     "afp": "2",
+     "estado": "-1",
+     "cons": "-1"
+
+   }
+ },
+  "consultarBonos": {
+    "type": "consult",
+    "action": "https://www.bonospensionales.gov.co/BonosPensionales/servlet/ServletProcesar",
+    "method": "POST",
+    "data": {
+      "impr": "true",
+      "afplog": "2",
+      "cadenaAfps": "02",
+      "nitsAutorizados": "800138188",
+      "accion": "consultarBonos",
+      "pcont": "null",
+      "nit": "800138188",
+      "perfil": "CET_EN_SOL_USU2",
+      "nombrePantallaJsp": "ConsultarBonos.jsp",
+      "tipoDocumento": "{__TYPE_DOC__}",
+      "documento": "{__NUM_DOC__}",
+      "afp": "2",
+      "ESTADO": "",
+      "cons": "",
+      "tipoBono": ""
+    }
+  }
+
+}
