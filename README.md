@@ -81,6 +81,31 @@ Este archivo se ubica en resource/metadata.json
 }
 ``` 
 
+| Propiedad  | Descripción |
+| ------------- | ------------- |
+| action  | url absoluta  |
+| type  | cualquier cadena  |
+| header  | objecto key-value |
+| data  | objecto key-value  |
+| method  | GET,POST  |
+| selector  | Selector CSS  |
+| path  | Parametro amigable  |
+| query  | Query Param del Request  |
+
+** MODELO CLASS **
+
+```
+public class MetalModel {
+    private String type;
+    private String action;
+    private String method;
+    private String path;
+    private String query;
+    private String selector;
+    private Map<String, String> data;
+    private Map<String, String> header;
+}
+```
 ## Uso de la Interfacez DocumentPort ##
 
 DocumentPort es una interfaz que permite determinar el Documento(org.jsoup.nodes.Document), funciona como protocolo del Extractors dado que por cada step(paso) se realiza la connect, execute y parse respectivamente. 
