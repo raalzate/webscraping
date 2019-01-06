@@ -12,15 +12,18 @@ Internamente para la definiciones de las acciones para la cual se desea realiza 
 
 Esta interfaz tiene como objetivo definir los pasos para la extracción, estos pasos se debe definir a travez del archivo JSON. A su vez recibe como argumento un estado del modelo, este tiene dos propósitos, alterar el modelo y acumular información en un mapa. 
 
+```
 public interface WebScraping {
     Extractors build(ModelState modelState);
 }
+```
 
-#### Extractors Class ####
+#### Ejemplo del Extractors Class ####
+
 
 La clase Extractors es un builder que ayuda a construir los pasos que se ejecuta la extracción, estos paso son los definidos en el modelo de datos del archivo .JSON.
 
-  
+```  
 public Extractors build(ModelState modelState) {
         Selector<Element> func = new DefaultSelector().andThen((label, modelState1, element) -> {
             List<String> listTitle = element.select(".panel-heading")
@@ -40,3 +43,37 @@ public Extractors build(ModelState modelState) {
                 .step("consultaBlogProd",func)
                 .build();
  }
+```
+
+#### Ejemplo de la Meta Data ####
+
+Este archivo se ubica en resource/metadata.json
+
+``` 
+{
+
+ "consultaBlogDeveloper": {
+   "type": "consult",
+   "action": "https://techandsolve.com/category/developer-e1533574812739/",
+   "method": "GET",
+   "selector": "body > div > div.container"
+ },
+
+  "consultaBlogs": {
+    "type": "consult",
+    "action": "https://techandsolve.com",
+    "method": "GET",
+    "query": "category=developer-e1533574812739",
+   "selector": "body > div > div.container"
+  },
+
+  "consultaBlogMachineLearning": {
+    "type": "consult",
+    "action": "https://techandsolve.com/category/machinelearn/",
+    "method": "GET",
+    "selector": "body > div > div.container"
+  },
+  ....
+
+}
+``` 
