@@ -92,7 +92,7 @@ Este archivo se ubica en resource/metadata.json
 | path  | Parametro amigable  |
 | query  | Query Param del Request  |
 
-** MODELO CLASS **
+**MODELO CLASS**
 
 ```
 public class MetalModel {
