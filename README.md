@@ -50,7 +50,7 @@ public Extractors build(ModelState modelState) {
  }
 ```
 
-**IMPORTANTE**: ***El estado de modelo trabaja como un memento entre steps, este a su acomula datos o resultados del scraping, en el ejemplo  modelState1.getExtra().put(label, listTitle), estamos guardando un llave según el label y el valor con el resultado esperado.***
+**IMPORTANTE**: El estado de modelo trabaja como un memento entre steps, este a su acomula datos o resultados del scraping, en el ejemplo  ```java modelState1.getExtra().put(label, listTitle) ```, estamos guardando un llave según el label y el valor con el resultado esperado.
 
 #### Ejemplo de la Meta Data ####
 
