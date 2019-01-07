@@ -50,7 +50,7 @@ public Extractors build(ModelState modelState) {
  }
 ```
 
-**IMPORTANTE**: El estado de modelo trabaja como un memento entre steps, este a su acomula datos o resultados del scraping, en el ejemplo  ```java modelState1.getExtra().put(label, listTitle) ```, estamos guardando un llave según el label y el valor con el resultado esperado.
+**IMPORTANTE**: El estado de modelo trabaja como un memento entre steps, este a su acomula datos o resultados del scraping, en el ejemplo  ``` modelState1.getExtra().put(label, listTitle) ```, estamos guardando un llave según el label y el valor con el resultado esperado.
 
 #### Ejemplo de la Meta Data ####
 
@@ -165,10 +165,10 @@ public class JSoupAdapter implements DocumentPort {
 
 Para ejecutar le scraping en necesario usar el comando que provee la librería. La clase ScraperCommand tiene 4 configuraciones para ejecutarse:
 
-- Ejecuta con los valores definidos del Modelo(metadata) y el archivo por defecto(metadata.json) 
-- Ejecuta definiendo el archivo .JSON (metadata)
+- Ejecuta con los valores definidos del Modelo(metadata) y el archivo por defecto(metadata.json) en la ruta por defecto
+- Ejecuta definiendo el archivo .JSON (metadata) partiendo del directorio resource
 - Ejecuta definiendo un modelo inicial 
-- Ejeucta definiendo el archivo .JSON (metadata) y el modelo inicial   
+- Ejecuta definiendo el archivo .JSON (metadata) y el modelo inicial   
 
 El resultado de los comando siempre es el valor de extras que tiene acomulado en el estado del modelo (el objeto estado de modelo es un memento que permite tener en memora datos que son compartidos a traves de los steps).
 
