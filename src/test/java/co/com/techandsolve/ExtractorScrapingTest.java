@@ -35,10 +35,10 @@ public class ExtractorScrapingTest {
         ArgumentCaptor<MetalModel> argument = ArgumentCaptor.forClass(MetalModel.class);
 
         String[] expected = {
-                "GET[https://techandsolve.com/category/developer-e1533574812739/]:consult --> body > div > div.container",
-                "GET[https://techandsolve.com/category/machinelearn/]:consult --> body > div > div.container",
-                "GET[https://techandsolve.com/category/iot/]:consult --> body > div > div.container",
-                "GET[https://techandsolve.com/category/ux/]:consult --> body > div > div.container"
+                "GET[https://techandsolve.com/category/developer-e1533574812739/?soft=ASC]:consult --> body > div > div.container",
+                "GET[https://techandsolve.com/category/machinelearn/?soft=ASC]:consult --> body > div > div.container",
+                "GET[https://techandsolve.com/category/iot/?soft=ASC]:consult --> body > div > div.container",
+                "GET[https://techandsolve.com/category/ux/?soft=ASC]:consult --> body > div > div.container"
         };
 
         Document document = Jsoup.parse(getHtml());
@@ -52,7 +52,7 @@ public class ExtractorScrapingTest {
         blogTnSWebScraping.build(modelState).run();
 
         IntStream.range(0, 4).forEach((i) -> {
-            MetalModel model = argument.getAllValues().get(i);
+            MetalModel t c = argument.getAllValues().get(i);
             Assert.assertEquals(expected[i], model.toString());
         });
 
@@ -75,7 +75,7 @@ public class ExtractorScrapingTest {
         metalModel.setSelector("body > div > div.container");
         blogDevelopWebScraping.build(modelState).runWithModel(metalModel);
 
-        Assert.assertEquals("GET[https://google.com]:consult --> body > div > div.container", modelState.getStateModel().toString());
+        Assert.assertEquals("GET[https://google.com]:consult --> body > div > div.container", modelState.getMetaModel().toString());
 
     }
 

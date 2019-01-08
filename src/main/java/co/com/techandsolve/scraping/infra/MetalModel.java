@@ -32,7 +32,7 @@ public class MetalModel {
     }
 
     public String getAction() {
-        return action + path + query;
+        return action + getPath() + getQuery();
     }
 
     public Map<String, String> getData() {
@@ -70,9 +70,8 @@ public class MetalModel {
     public void setQuery(String query) {
         Optional.ofNullable(query)
                 .filter(q -> !"".equals(q))
-                .map(q -> q.replace("?", ""))
                 .ifPresent(q ->
-                        this.query = "?" + query
+                        this.query = "?" + query.replace("?", "")
                 );
 
     }

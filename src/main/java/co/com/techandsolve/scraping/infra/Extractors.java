@@ -37,7 +37,7 @@ public class Extractors {
 
         extractorsList.keySet().forEach(name -> {
             MetalModel model = parseModel.toParse(name);
-            MetalModel stateModel = modelState.getStateModel();
+            MetalModel stateModel = modelState.getMetaModel();
             model.setQuery(stateModel.getQuery());
             model.setPath(stateModel.getPath());
             model.getData().putAll(stateModel.getData());
@@ -52,7 +52,7 @@ public class Extractors {
     }
 
     public void runWithModel(MetalModel model) {
-        MetalModel stateModel = modelState.getStateModel();
+        MetalModel stateModel = modelState.getMetaModel();
         model.setQuery(stateModel.getQuery());
         model.setPath(stateModel.getPath());
         model.getData().putAll(stateModel.getData());

@@ -19,7 +19,7 @@ public class ModelState {
         this.extraData = new ExtraData();
     }
 
-    public MetalModel getStateModel() {
+    public MetalModel getMetaModel() {
         return model;
     }
 

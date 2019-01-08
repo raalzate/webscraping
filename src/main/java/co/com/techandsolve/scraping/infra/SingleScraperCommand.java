@@ -16,13 +16,13 @@ public class SingleScraperCommand {
     }
 
     public Map<String, Object> execute(WebScraping webScraping) {
-        webScraping.build(modelState).runWithModel(modelState.getStateModel());
+        webScraping.build(modelState).runWithModel(modelState.getMetaModel());
         return modelState.getExtra();
     }
 
     public Map<String, Object> execute(AuthWebScraping webScraping) {
         webScraping.login();
-        webScraping.build(modelState).runWithModel(modelState.getStateModel());
+        webScraping.build(modelState).runWithModel(modelState.getMetaModel());
         webScraping.logout();
         return modelState.getExtra();
     }
