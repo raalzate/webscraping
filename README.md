@@ -24,8 +24,19 @@ La clase ***Extractors**** es un builder que ayuda a construir los pasos que se 
 ```java  
 Extractors.builder(jSoupAdapter) // Adaptador que tiene el puerto para poder realizar la conexión, ejecución y parse
                 .setState(modelState) // el objeto que tiene como objetivo cambiar los estados
-                .step("tag",func) // el primer paso con su respectiva funciona selectora 
+                .step("label",func) // el primer paso con su respectiva funciona selectora y el label del metamodelo
                 .build() // el constructor de los pasos
+```  
+
+** OTRO EJEMPLO SIN UNSAR LOS LABEL DE META MODELO**
+
+Este ejemplo no requiere tener un flujo de pasos.
+
+```java
+Extractors.builder(jSoupAdapter)// Adaptador que tiene el puerto para poder realizar la conexión, ejecución y parse
+                .setState(modelState)// el objeto que tiene como objetivo cambiar los estados
+                .setSelector("label",func)// funciona selectora y el label
+                .build() //el constructor 
 ```  
 
 **EJEMPLO DE USO PARA EL METODO BUILD**
@@ -161,7 +172,7 @@ public class JSoupAdapter implements DocumentPort {
 }
 ```
 
-## Ejecutar el Web Scraping ##
+## Ejecutar el Web Scraping (Commands) ##
 
 Para ejecutar el scraping en necesario usar el comando que provee la librería. La clase ScraperCommand tiene 4 configuraciones para ejecutarse:
 
@@ -180,6 +191,14 @@ El resultado de los comando siempre es el valor de extras que tiene acumulado en
  ScraperCommand scraperCommand = new ScraperCommand();
  Map<String, Object> result = scraperCommand.execute(new ImpWebScraping(adapter));
  
+```
+
+```java
+JSoupAdapter adapter = new JSoupAdapter();
+MetalModel metalModel = new MetalModel("consult", "https://techandsolve.com/category/developer-e1533574812739/", "GET");
+metalModel.setSelector("body > div > div.container");
+SingleScraperCommand scraperCommand = new SingleScraperCommand(metalModel);
+Map<String, Object> result = scraperCommand.execute(new ImpWebScraping(adapter)); // este scraping debe proporcinal el unico selector (.setSelector) 
 ```
 
 ## Uso de la Interfaz Selector ##
