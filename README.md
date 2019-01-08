@@ -182,4 +182,26 @@ El resultado de los comando siempre es el valor de extras que tiene acumulado en
  
 ```
 
+## Uso de la Interfaz Selector ##
+
+```java
+public class DefaultSelector implements Selector<Element> {
+    @Override
+    public void accept(String label, ModelState modelState, Element element) {
+        modelState.setStateModel(null)
+                .putExtra(label, element.html());
+    }
+}
+```
+
+```java
+public interface Selector<E extends Element> {
+    void accept(String label, ModelState modelState, E element);
+    default Selector<E> andThen(Selector<Element> after) {
+        Objects.requireNonNull(after);
+        return (String l, ModelState m, E e) -> { accept(l, m, e); after.accept(l, m, e); };
+    }
+}
+```
+
 
