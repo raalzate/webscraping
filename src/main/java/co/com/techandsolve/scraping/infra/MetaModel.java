@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public class MetalModel {
+public class MetaModel {
     private String type;
     private String action;
     private String method;
@@ -16,7 +16,7 @@ public class MetalModel {
     private Map<String, String> header;
 
 
-    public MetalModel(String type, String action, String method) {
+    public MetaModel(String type, String action, String method) {
         this.type = type;
         this.action = action;
         this.method = method;

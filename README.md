@@ -108,7 +108,7 @@ Este archivo se ubica en ***resource/metadata.json***
 **MODELO CLASS**
 
 ```java
-public class MetalModel {
+public class MetaModel {
     private String type;
     private String action;
     private String method;
@@ -125,7 +125,7 @@ DocumentPort es una interfaz que permite determinar el Documento(org.jsoup.nodes
 
 ```java
 public interface DocumentPort {
-    void connect(MetalModel model);
+    void connect(MetaModel model);
     void execute();
     Document parse();
 }
@@ -140,7 +140,7 @@ public class JSoupAdapter implements DocumentPort {
     private Connection.Response result;
 
     @Override
-    public void connect(MetalModel model) {
+    public void connect(MetaModel model) {
         connection =  Jsoup.connect(model.getAction())
                 .cookies(CookieUtils.getCookies())
                 .method(getMethod(model.getMethod()))
@@ -195,9 +195,9 @@ El resultado de los comando siempre es el valor de extras que tiene acumulado en
 
 ```java
 JSoupAdapter adapter = new JSoupAdapter();
-MetalModel metalModel = new MetalModel("consult", "https://techandsolve.com/category/developer-e1533574812739/", "GET");
-metalModel.setSelector("body > div > div.container");
-SingleScraperCommand scraperCommand = new SingleScraperCommand(metalModel);
+MetaModel metaModel = new MetaModel("consult", "https://techandsolve.com/category/developer-e1533574812739/", "GET");
+metaModel.setSelector("body > div > div.container");
+SingleScraperCommand scraperCommand = new SingleScraperCommand(metaModel);
 Map<String, Object> result = scraperCommand.execute(new ImpWebScraping(adapter)); // este scraping debe proporcinal el unico selector (.setSelector) 
 ```
 

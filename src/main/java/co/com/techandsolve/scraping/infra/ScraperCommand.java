@@ -11,14 +11,14 @@ public class ScraperCommand {
     private ModelState modelState;
     private String metaModelFile;
 
-    public ScraperCommand(MetalModel metalModel, String metaModelFile) {
+    public ScraperCommand(MetaModel metaModel, String metaModelFile) {
         this.modelState = new ModelState();
-        this.modelState.setStateModel(metalModel);
+        this.modelState.setStateModel(metaModel);
         this.metaModelFile = metaModelFile;
     }
 
-    public ScraperCommand(MetalModel metalModel) {
-        this(metalModel, null);
+    public ScraperCommand(MetaModel metaModel) {
+        this(metaModel, null);
     }
 
     public ScraperCommand(String metaModelFile) {

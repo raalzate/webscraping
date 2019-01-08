@@ -16,12 +16,12 @@ import java.util.function.Consumer;
  * Created by Raul .A Alzate raul.alzate@techandsolve.com on 20/12/2018.
  */
 public class Extractors {
-    private Map<String, Consumer<MetalModel>> extractorsList;
+    private Map<String, Consumer<MetaModel>> extractorsList;
     private ModelState modelState;
-    private Consumer<MetalModel> extractor;
+    private Consumer<MetaModel> extractor;
 
 
-    Extractors(Map<String, Consumer<MetalModel>> extractorsList, ModelState modelState, Consumer<MetalModel> extractor) {
+    Extractors(Map<String, Consumer<MetaModel>> extractorsList, ModelState modelState, Consumer<MetaModel> extractor) {
         this.extractorsList = extractorsList;
         this.modelState = modelState;
         this.extractor = extractor;
@@ -36,8 +36,8 @@ public class Extractors {
         final ParseModel parseModel = new ParseModel(jsonNode);
 
         extractorsList.keySet().forEach(name -> {
-            MetalModel model = parseModel.toParse(name);
-            MetalModel stateModel = modelState.getMetaModel();
+            MetaModel model = parseModel.toParse(name);
+            MetaModel stateModel = modelState.getMetaModel();
             model.setQuery(stateModel.getQuery());
             model.setPath(stateModel.getPath());
             model.getData().putAll(stateModel.getData());
@@ -51,8 +51,8 @@ public class Extractors {
         run(null);
     }
 
-    public void runWithModel(MetalModel model) {
-        MetalModel stateModel = modelState.getMetaModel();
+    public void runWithModel(MetaModel model) {
+        MetaModel stateModel = modelState.getMetaModel();
         model.setQuery(stateModel.getQuery());
         model.setPath(stateModel.getPath());
         model.getData().putAll(stateModel.getData());
@@ -63,8 +63,8 @@ public class Extractors {
 
     public static class ExtractorsBuilder {
 
-        private LinkedHashMap<String, Consumer<MetalModel>> extractorsList;
-        private Consumer<MetalModel> extractor;
+        private LinkedHashMap<String, Consumer<MetaModel>> extractorsList;
+        private Consumer<MetaModel> extractor;
         private DocumentPort port;
         private ModelState modelState;
 

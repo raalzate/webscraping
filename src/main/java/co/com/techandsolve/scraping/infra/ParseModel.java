@@ -18,12 +18,12 @@ public class ParseModel {
         this.jsonNode = jsonNode;
     }
 
-    public static MetalModel getModel() {
-        return new MetalModel(null, null, null);
+    public static MetaModel getModel() {
+        return new MetaModel(null, null, null);
     }
 
 
-    public MetalModel toParse(String nodeKey) {
+    public MetaModel toParse(String nodeKey) {
         JsonNode node = jsonNode.get(nodeKey);
 
         String method = getStringNode(node, "method");
@@ -53,14 +53,14 @@ public class ParseModel {
                                 )
                 );
 
-        MetalModel newMetalModel = new MetalModel(type, action, method);
+        MetaModel newMetaModel = new MetaModel(type, action, method);
 
-        newMetalModel.setData(data);
-        newMetalModel.setHeader(header);
-        newMetalModel.setPath(path);
-        newMetalModel.setQuery(query);
-        newMetalModel.setSelector(selector);
-        return newMetalModel;
+        newMetaModel.setData(data);
+        newMetaModel.setHeader(header);
+        newMetaModel.setPath(path);
+        newMetaModel.setQuery(query);
+        newMetaModel.setSelector(selector);
+        return newMetaModel;
     }
 
 

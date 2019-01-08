@@ -3,7 +3,7 @@ package co.com.techandsolve;
 import co.com.techandsolve.example.BlogDevelopWebScraping;
 import co.com.techandsolve.example.BlogTnSWebScraping;
 import co.com.techandsolve.scraping.infra.JSoupAdapter;
-import co.com.techandsolve.scraping.infra.MetalModel;
+import co.com.techandsolve.scraping.infra.MetaModel;
 import co.com.techandsolve.scraping.state.ModelState;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -32,7 +32,7 @@ public class ExtractorScrapingTest {
 
     @Test
     public void runStepsScraping() throws IOException {
-        ArgumentCaptor<MetalModel> argument = ArgumentCaptor.forClass(MetalModel.class);
+        ArgumentCaptor<MetaModel> argument = ArgumentCaptor.forClass(MetaModel.class);
 
         String[] expected = {
                 "GET[https://techandsolve.com/category/developer-e1533574812739/?soft=ASC]:consult --> body > div > div.container",
@@ -52,7 +52,7 @@ public class ExtractorScrapingTest {
         blogTnSWebScraping.build(modelState).run();
 
         IntStream.range(0, 4).forEach((i) -> {
-            MetalModel model = argument.getAllValues().get(i);
+            MetaModel model = argument.getAllValues().get(i);
             Assert.assertEquals(expected[i], model.toString());
         });
 
@@ -62,7 +62,7 @@ public class ExtractorScrapingTest {
     @Test
     public void runSingleScraping() throws IOException {
 
-        ArgumentCaptor<MetalModel> argument = ArgumentCaptor.forClass(MetalModel.class);
+        ArgumentCaptor<MetaModel> argument = ArgumentCaptor.forClass(MetaModel.class);
 
         Document document = Jsoup.parse(getHtml());
         doNothing().when(adapter).connect(argument.capture());
@@ -71,9 +71,9 @@ public class ExtractorScrapingTest {
         BlogDevelopWebScraping blogDevelopWebScraping = new BlogDevelopWebScraping(adapter);
 
         ModelState modelState = new ModelState();
-        MetalModel metalModel = new MetalModel("consult", "https://google.com", "GET");
-        metalModel.setSelector("body > div > div.container");
-        blogDevelopWebScraping.build(modelState).runWithModel(metalModel);
+        MetaModel metaModel = new MetaModel("consult", "https://google.com", "GET");
+        metaModel.setSelector("body > div > div.container");
+        blogDevelopWebScraping.build(modelState).runWithModel(metaModel);
 
         Assert.assertEquals("GET[https://google.com]:consult --> body > div > div.container", modelState.getMetaModel().toString());
 

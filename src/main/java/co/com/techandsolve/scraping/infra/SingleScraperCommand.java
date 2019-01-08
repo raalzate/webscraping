@@ -10,9 +10,9 @@ public class SingleScraperCommand {
 
     private ModelState modelState;
 
-    public SingleScraperCommand(MetalModel metalModel) {
+    public SingleScraperCommand(MetaModel metaModel) {
         this.modelState = new ModelState();
-        this.modelState.setStateModel(metalModel);
+        this.modelState.setStateModel(metaModel);
     }
 
     public Map<String, Object> execute(WebScraping webScraping) {
