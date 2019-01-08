@@ -28,7 +28,7 @@ Extractors.builder(jSoupAdapter) // Adaptador que tiene el puerto para poder rea
                 .build() // el constructor de los pasos
 ```  
 
-** OTRO EJEMPLO SIN UNSAR LOS LABEL DE META MODELO**
+**OTRO EJEMPLO SIN UNSAR LOS LABEL DE META MODELO**
 
 Este ejemplo no requiere tener un flujo de pasos.
 
