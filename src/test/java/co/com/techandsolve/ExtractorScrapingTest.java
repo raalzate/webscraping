@@ -52,7 +52,7 @@ public class ExtractorScrapingTest {
         blogTnSWebScraping.build(modelState).run();
 
         IntStream.range(0, 4).forEach((i) -> {
-            MetalModel t c = argument.getAllValues().get(i);
+            MetalModel model = argument.getAllValues().get(i);
             Assert.assertEquals(expected[i], model.toString());
         });
 
