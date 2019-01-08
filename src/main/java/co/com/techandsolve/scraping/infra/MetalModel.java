@@ -27,36 +27,44 @@ public class MetalModel {
         this.selector = "";
     }
 
-    protected void setData(Map<String, String> data) {
-        this.data = data;
-    }
-
-    protected void setHeader(Map<String, String> header) {
-        this.header = header;
-    }
-
     public String getType() {
         return type;
     }
 
     public String getAction() {
-        return action+path+query;
+        return action + path + query;
     }
 
     public Map<String, String> getData() {
         return data;
     }
 
+    protected void setData(Map<String, String> data) {
+        this.data = data;
+    }
+
     public Map<String, String> getHeader() {
         return header;
+    }
+
+    protected void setHeader(Map<String, String> header) {
+        this.header = header;
     }
 
     public String getMethod() {
         return method;
     }
 
+    public String getPath() {
+        return path;
+    }
+
     public void setPath(String path) {
         this.path = path;
+    }
+
+    public String getQuery() {
+        return query;
     }
 
     public void setQuery(String query) {
@@ -64,27 +72,19 @@ public class MetalModel {
                 .filter(q -> !"".equals(q))
                 .map(q -> q.replace("?", ""))
                 .ifPresent(q ->
-                    this.query = "?"+query
+                        this.query = "?" + query
                 );
 
-    }
-
-    public void setSelector(String selector){
-        this.selector = selector;
-    }
-
-    public String getPath() {
-        return path;
-    }
-
-    public String getQuery() {
-        return query;
     }
 
     public String getSelector() {
         return Optional.of(selector)
                 .filter(q -> !"".equals(q))
                 .orElse("body");
+    }
+
+    public void setSelector(String selector) {
+        this.selector = selector;
     }
 
     @Override

@@ -2,8 +2,8 @@ package co.com.techandsolve.example;
 
 import co.com.techandsolve.scraping.DocumentPort;
 import co.com.techandsolve.scraping.WebScraping;
-import co.com.techandsolve.scraping.selector.DefaultSelector;
 import co.com.techandsolve.scraping.infra.Extractors;
+import co.com.techandsolve.scraping.selector.DefaultSelector;
 import co.com.techandsolve.scraping.selector.Selector;
 import co.com.techandsolve.scraping.state.ModelState;
 import org.jsoup.nodes.Element;
@@ -33,11 +33,11 @@ public class BlogTnSWebScraping implements WebScraping {
 
         return Extractors.builder(jSoupAdapter)
                 .setState(modelState)
-                .step("consultaBlogDeveloper",func)
-                .step("consultaBlogMachineLearning",func)
-                .step("consultaBlogIoT",func)
-                .step("consultaBlogUX",func)
-                .step("consultaBlogProd",func)
+                .step("consultaBlogDeveloper", func)
+                .step("consultaBlogMachineLearning", func)
+                .step("consultaBlogIoT", func)
+                .step("consultaBlogUX", func)
+                .step("consultaBlogProd", func)
                 .build();
     }
 }

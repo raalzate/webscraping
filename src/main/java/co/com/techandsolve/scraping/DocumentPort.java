@@ -5,6 +5,8 @@ import org.jsoup.nodes.Document;
 
 public interface DocumentPort {
     void connect(MetalModel model);
+
     void execute();
+
     Document parse();
 }

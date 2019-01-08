@@ -16,7 +16,7 @@ public class JSoupAdapter implements DocumentPort {
 
     @Override
     public void connect(MetalModel model) {
-        connection =  Jsoup.connect(model.getAction())
+        connection = Jsoup.connect(model.getAction())
                 .cookies(CookieUtils.getCookies())
                 .method(getMethod(model.getMethod()))
                 .data(model.getData())
@@ -28,7 +28,7 @@ public class JSoupAdapter implements DocumentPort {
         try {
             result = connection.execute();
         } catch (IOException e) {
-           throw new DocumentException(e.getMessage());
+            throw new DocumentException(e.getMessage());
         }
     }
 
@@ -41,7 +41,7 @@ public class JSoupAdapter implements DocumentPort {
         }
     }
 
-    private Connection.Method getMethod(String method){
+    private Connection.Method getMethod(String method) {
         return Connection.Method.valueOf(method.toUpperCase());
     }
 

@@ -14,7 +14,7 @@ public class ModelState {
     private MetalModel model;
     private ExtraData extraData;
 
-    public ModelState(){
+    public ModelState() {
         this.model = ParseModel.getModel();
         this.extraData = new ExtraData();
     }
@@ -29,17 +29,18 @@ public class ModelState {
         return extraData;
     }
 
-    public Map<String, Object> getExtra(){
+    public Map<String, Object> getExtra() {
         return extraData.extra;
     }
 
     public static class ExtraData {
         private Map<String, Object> extra;
 
-        ExtraData(){
+        ExtraData() {
             this.extra = new HashMap<>();
         }
-        public ExtraData putExtra(String key, Object value){
+
+        public ExtraData putExtra(String key, Object value) {
             extra.put(key, value);
             return this;
         }

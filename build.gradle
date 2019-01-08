@@ -12,31 +12,10 @@ repositories {
 dependencies {
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:2.+'
-    
+
     compile 'org.jsoup:jsoup:1.11.3'
     compile 'com.fasterxml.jackson.core:jackson-core:2.6.3'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.6.3'
     compile 'net.sourceforge.htmlunit:htmlunit:2.13'
 
-}
-
-
-sourceSets {
-    functionalTest {
-        java {
-            compileClasspath += main.output + test.output
-            runtimeClasspath += main.output + test.output
-            srcDir file('src/functional-test/java')
-        }
-        resources.srcDir file('src/functional-test/resources')
-    }
-
-    pocTest {
-        java {
-            compileClasspath += main.output + test.output
-            runtimeClasspath += main.output + test.output
-            srcDir file('src/poc-test/java')
-        }
-        resources.srcDir file('src/poc-test/resources')
-    }
 }

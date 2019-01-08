@@ -1,5 +1,6 @@
 package co.com.techandsolve;
 
+import co.com.techandsolve.example.BlogDevelopWebScraping;
 import co.com.techandsolve.example.BlogTnSWebScraping;
 import co.com.techandsolve.scraping.infra.JSoupAdapter;
 import co.com.techandsolve.scraping.infra.MetalModel;
@@ -30,7 +31,7 @@ public class ExtractorScrapingTest {
 
 
     @Test
-    public void runScraping() throws IOException {
+    public void runStepsScraping() throws IOException {
         ArgumentCaptor<MetalModel> argument = ArgumentCaptor.forClass(MetalModel.class);
 
         String[] expected = {
@@ -53,7 +54,29 @@ public class ExtractorScrapingTest {
         IntStream.range(0, 4).forEach((i) -> {
             MetalModel model = argument.getAllValues().get(i);
             Assert.assertEquals(expected[i], model.toString());
-        } );
+        });
+
+        verify(adapter, times(5)).parse();
+    }
+
+    @Test
+    public void runSingleScraping() throws IOException {
+
+        ArgumentCaptor<MetalModel> argument = ArgumentCaptor.forClass(MetalModel.class);
+
+        Document document = Jsoup.parse(getHtml());
+        doNothing().when(adapter).connect(argument.capture());
+        doNothing().when(adapter).execute();
+        when(adapter.parse()).thenReturn(document);
+        BlogDevelopWebScraping blogDevelopWebScraping = new BlogDevelopWebScraping(adapter);
+
+        ModelState modelState = new ModelState();
+        MetalModel metalModel = new MetalModel("consult", "https://google.com", "GET");
+        metalModel.setSelector("body > div > div.container");
+        blogDevelopWebScraping.build(modelState).runWithModel(metalModel);
+
+        Assert.assertEquals("GET[https://google.com]:consult --> body > div > div.container", modelState.getStateModel().toString());
+
     }
 
 
