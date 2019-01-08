@@ -184,22 +184,27 @@ El resultado de los comando siempre es el valor de extras que tiene acumulado en
 
 ## Uso de la Interfaz Selector ##
 
-```java
-public class DefaultSelector implements Selector<Element> {
-    @Override
-    public void accept(String label, ModelState modelState, Element element) {
-        modelState.setStateModel(null)
-                .putExtra(label, element.html());
-    }
-}
-```
+Un selector es un función que permite consumir el elemento extraído por el scraping, un selector es el encargado en muchas de las ocaciones de acumular la respuesta requerida, por ese motivo el método de la interfaz recibe como argumento el label o tag, el estado del modelo y elemento.
 
 ```java
+
 public interface Selector<E extends Element> {
     void accept(String label, ModelState modelState, E element);
     default Selector<E> andThen(Selector<Element> after) {
         Objects.requireNonNull(after);
         return (String l, ModelState m, E e) -> { accept(l, m, e); after.accept(l, m, e); };
+    }
+}
+```
+***EJEMPLO DE USO***
+
+```java
+
+public class DefaultSelector implements Selector<Element> {
+    @Override
+    public void accept(String label, ModelState modelState, Element element) {
+        modelState.setStateModel(null)
+                .putExtra(label, element.html());
     }
 }
 ```
