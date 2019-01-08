@@ -209,4 +209,17 @@ public class DefaultSelector implements Selector<Element> {
 }
 ```
 
+## Uso de la clase ModelState ##
+
+La clase ModelState tiene dos propósitos, el primero es guardar estados de los step a través de la función Extra, y el segundo es alterar el modelo del siguiente step.
+
+El siguiente ejemplo no definimos ningún modelo y agregamos un valor al extra con la llave tag.
+
+```java
+
+modelState.setStateModel(null)
+                .putExtra("tag", element.html());
+```
+
+**IMPORTANTE:** al ejecutar el comando siempre retorna los extras, por cada selector se deberia tener uno o mas extra como resulta final del scraping.
 
