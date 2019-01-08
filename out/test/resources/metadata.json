@@ -1,0 +1,44 @@
+{
+
+ "consultaBlogDeveloper": {
+   "type": "consult",
+   "action": "https://techandsolve.com/category/developer-e1533574812739/",
+   "method": "GET",
+   "selector": "body > div > div.container"
+ },
+
+  "consultaBlogs": {
+    "type": "consult",
+    "action": "https://techandsolve.com",
+    "method": "GET",
+    "query": "category=developer-e1533574812739",
+    "selector": "co.com.proteccion.selector.DefaultSele"
+  },
+
+  "consultaBlogMachineLearning": {
+    "type": "consult",
+    "action": "https://techandsolve.com/category/machinelearn/",
+    "method": "GET",
+    "selector": "body > div > div.container"
+  },
+  "consultaBlogIoT": {
+    "type": "consult",
+    "action": "https://techandsolve.com/category/iot/",
+    "method": "GET",
+    "selector": "body > div > div.container"
+  },
+  "consultaBlogUX": {
+    "type": "consult",
+    "action": "https://techandsolve.com/category/ux/",
+    "method": "GET",
+    "selector": "body > div > div.container"
+  },
+  "consultaBlogProd": {
+    "type": "consult",
+    "action": "https://techandsolve.com/category/productividad/",
+    "method": "GET",
+    "selector": "body > div > div.container"
+  }
+
+
+}

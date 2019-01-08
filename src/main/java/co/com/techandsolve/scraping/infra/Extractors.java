@@ -18,11 +18,13 @@ import java.util.function.Consumer;
 public class Extractors {
     private Map<String, Consumer<MetalModel>> extractorsList;
     private ModelState modelState;
+    private Consumer<MetalModel> extractor;
 
 
-    Extractors(Map<String, Consumer<MetalModel>> extractorsList, ModelState modelState) {
+    Extractors(Map<String, Consumer<MetalModel>> extractorsList, ModelState modelState, Consumer<MetalModel> extractor) {
         this.extractorsList = extractorsList;
         this.modelState = modelState;
+        this.extractor = extractor;
     }
 
     public static ExtractorsBuilder builder(DocumentPort port) {
@@ -45,13 +47,24 @@ public class Extractors {
         });
     }
 
-    public void run(){
+    public void run() {
         run(null);
+    }
+
+    public void runWithModel(MetalModel model) {
+        MetalModel stateModel = modelState.getStateModel();
+        model.setQuery(stateModel.getQuery());
+        model.setPath(stateModel.getPath());
+        model.getData().putAll(stateModel.getData());
+        model.getHeader().putAll(stateModel.getHeader());
+        modelState.setStateModel(model);
+        extractor.accept(model);
     }
 
     public static class ExtractorsBuilder {
 
         private LinkedHashMap<String, Consumer<MetalModel>> extractorsList;
+        private Consumer<MetalModel> extractor;
         private DocumentPort port;
         private ModelState modelState;
 
@@ -59,7 +72,7 @@ public class Extractors {
             this.port = port;
         }
 
-        public ExtractorsBuilder setState(ModelState modelState){
+        public ExtractorsBuilder setState(ModelState modelState) {
             this.modelState = modelState;
             return this;
         }
@@ -80,9 +93,21 @@ public class Extractors {
             return this;
         }
 
+        public ExtractorsBuilder setSelector(String label, Selector<Element> func) {
+            this.extractor = metalModel -> {
+                String selector = metalModel.getSelector();
+                port.connect(metalModel);
+                port.execute();
+                Document document = port.parse();
+                Element element = document.selectFirst(selector);
+                func.accept(label, modelState, element);
+            };
+            return this;
+        }
+
 
         public Extractors build() {
-            return new Extractors(extractorsList, modelState);
+            return new Extractors(extractorsList, modelState, extractor);
         }
 
     }

@@ -10,14 +10,11 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.times;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ParseModelTest {
@@ -29,7 +26,7 @@ public class ParseModelTest {
     private JsonNode jsonNode;
 
     @Test
-    public void parseOtherAtrr(){
+    public void parseOtherAtrr() {
 
         JsonNode n1 = mock(JsonNode.class);
         when(n1.asText()).thenReturn("method");
@@ -73,10 +70,10 @@ public class ParseModelTest {
     }
 
     @Test
-    public void parseWithData(){
+    public void parseWithData() {
         JsonNode dataNode = mock(JsonNode.class);
         when(dataNode.asText()).thenReturn("value of arg");
-        Map.Entry<String, JsonNode>  entry = new HashMap.SimpleEntry<>("arg",dataNode);
+        Map.Entry<String, JsonNode> entry = new HashMap.SimpleEntry<>("arg", dataNode);
 
         Iterator<Map.Entry<String, JsonNode>> entryIterator = Iterators.singleton(entry);
 
@@ -97,10 +94,10 @@ public class ParseModelTest {
     }
 
     @Test
-    public void parseWithHeader(){
+    public void parseWithHeader() {
         JsonNode headerNode = mock(JsonNode.class);
         when(headerNode.asText()).thenReturn("value of header");
-        Map.Entry<String, JsonNode>  entry = new HashMap.SimpleEntry<>("header",headerNode);
+        Map.Entry<String, JsonNode> entry = new HashMap.SimpleEntry<>("header", headerNode);
         Iterator<Map.Entry<String, JsonNode>> entryIterator = Iterators.singleton(entry);
 
         JsonNode header = mock(JsonNode.class);

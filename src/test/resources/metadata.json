@@ -1,12 +1,10 @@
 {
-
- "consultaBlogDeveloper": {
-   "type": "consult",
-   "action": "https://techandsolve.com/category/developer-e1533574812739/",
-   "method": "GET",
-   "selector": "body > div > div.container"
- },
-
+  "consultaBlogDeveloper": {
+    "type": "consult",
+    "action": "https://techandsolve.com/category/developer-e1533574812739/",
+    "method": "GET",
+    "selector": "body > div > div.container"
+  },
   "consultaBlogs": {
     "type": "consult",
     "action": "https://techandsolve.com",
@@ -14,7 +12,6 @@
     "query": "category=developer-e1533574812739",
     "selector": "co.com.proteccion.selector.DefaultSele"
   },
-
   "consultaBlogMachineLearning": {
     "type": "consult",
     "action": "https://techandsolve.com/category/machinelearn/",
@@ -39,6 +36,4 @@
     "method": "GET",
     "selector": "body > div > div.container"
   }
-
-
 }

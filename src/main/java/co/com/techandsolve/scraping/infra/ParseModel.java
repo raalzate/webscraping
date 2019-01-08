@@ -18,8 +18,8 @@ public class ParseModel {
         this.jsonNode = jsonNode;
     }
 
-    public static MetalModel getModel(){
-     return new MetalModel(null, null, null);
+    public static MetalModel getModel() {
+        return new MetalModel(null, null, null);
     }
 
 
@@ -64,12 +64,12 @@ public class ParseModel {
     }
 
 
-    private String getStringNode(JsonNode node, String name){
-        return node.get(name) == null ? "": node.get(name).asText();
+    private String getStringNode(JsonNode node, String name) {
+        return node.get(name) == null ? "" : node.get(name).asText();
     }
 
-    private Iterator<Map.Entry<String, JsonNode>> getMapNode(JsonNode node, String name){
-        return node.get(name) == null ? Collections.emptyIterator(): node.get(name).fields();
+    private Iterator<Map.Entry<String, JsonNode>> getMapNode(JsonNode node, String name) {
+        return node.get(name) == null ? Collections.emptyIterator() : node.get(name).fields();
     }
 
 
