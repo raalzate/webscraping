@@ -11,14 +11,14 @@ public class ScraperCommand {
     private ModelState modelState;
     private String metaModelFile;
 
-    public ScraperCommand(MetaModel metaModel, String metaModelFile) {
+    public ScraperCommand(MetaModel defaultMetaModel, String metaModelFile) {
         this.modelState = new ModelState();
-        this.modelState.setStateModel(metaModel);
+        this.modelState.setStateModel(defaultMetaModel);
         this.metaModelFile = metaModelFile;
     }
 
-    public ScraperCommand(MetaModel metaModel) {
-        this(metaModel, null);
+    public ScraperCommand(MetaModel defaultMetaModel) {
+        this(defaultMetaModel, null);
     }
 
     public ScraperCommand(String metaModelFile) {
@@ -37,6 +37,18 @@ public class ScraperCommand {
     public Map<String, Object> execute(AuthWebScraping webScraping) {
         webScraping.login();
         webScraping.build(modelState).run(metaModelFile);
+        webScraping.logout();
+        return modelState.getExtra();
+    }
+
+    public Map<String, Object> execute(WebScraping webScraping, MetaModel metaModel) {
+        webScraping.build(modelState).runWithModel(metaModel);
+        return modelState.getExtra();
+    }
+
+    public Map<String, Object> execute(AuthWebScraping webScraping, MetaModel metaModel) {
+        webScraping.login();
+        webScraping.build(modelState).runWithModel(metaModel);
         webScraping.logout();
         return modelState.getExtra();
     }

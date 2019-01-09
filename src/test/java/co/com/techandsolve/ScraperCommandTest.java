@@ -33,10 +33,11 @@ public class ScraperCommandTest {
         JSoupAdapter adapter = new JSoupAdapter();
         MetaModel metaModel = new MetaModel("consult", "https://techandsolve.com/category/developer-e1533574812739/", "GET");
         metaModel.setSelector("body > div > div.container");
-        SingleScraperCommand scraperCommand = new SingleScraperCommand(metaModel);
-        Map<String, Object> result = scraperCommand.execute(new BlogDevelopWebScraping(adapter));
+        ScraperCommand scraperCommand = new ScraperCommand();
+        Map<String, Object> result = scraperCommand.execute(new BlogDevelopWebScraping(adapter), metaModel);
 
         System.out.println(result);
+
     }
 
 

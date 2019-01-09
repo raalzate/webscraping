@@ -30,13 +30,12 @@ Extractors.builder(jSoupAdapter) // Adaptador que tiene el puerto para poder rea
 
 **OTRO EJEMPLO SIN UNSAR LOS LABEL DE META MODELO**
 
-Este ejemplo no requiere tener un flujo de pasos.
+Este ejemplo no requiere tener un flujo de pasos, solo realiza la extracción.
 
 ```java
 Extractors.builder(jSoupAdapter)// Adaptador que tiene el puerto para poder realizar la conexión, ejecución y parse
                 .setState(modelState)// el objeto que tiene como objetivo cambiar los estados
-                .setSelector("label",func)// funciona selectora y el label
-                .build() //el constructor 
+                .buildExtractor("label",func);//  el label y funciona selectora
 ```  
 
 **EJEMPLO DE USO PARA EL METODO BUILD**
@@ -179,7 +178,7 @@ Para ejecutar el scraping en necesario usar el comando que provee la librería. 
 - Ejecuta con los valores definidos del Modelo(metadata) y el archivo por defecto(metadata.json) en la ruta por defecto
 - Ejecuta definiendo el archivo .JSON (metadata) partiendo del directorio resource
 - Ejecuta definiendo un modelo inicial 
-- Ejecuta definiendo el archivo .JSON (metadata) y el modelo inicial   
+- Ejecuta definiendo el archivo .JSON (metadata) y el modelo inicial
 
 El resultado de los comando siempre es el valor de extras que tiene acumulado en el estado del modelo (el objeto estado de modelo es un memento que permite tener en memora datos que son compartidos a través de los steps).
 
@@ -188,18 +187,27 @@ El resultado de los comando siempre es el valor de extras que tiene acumulado en
 
 ```java
  JSoupAdapter adapter = new JSoupAdapter();
- ScraperCommand scraperCommand = new ScraperCommand();
- Map<String, Object> result = scraperCommand.execute(new ImpWebScraping(adapter));
+
+
+ ScraperCommand scraperCommand = new ScraperCommand(); //con valores por defecto
+
+ ScraperCommand scraperCommand = new ScraperCommand(defaultMetaModel, metaModelFile);// un modelo inicial y un archivo metadata.json especifico
+ ScraperCommand scraperCommand = new ScraperCommand(defaultMetaModel);// un modelo inicial y  la ruta del archivo por defecto
+ ScraperCommand scraperCommand = new ScraperCommand(metaModelFile);// un archivo definido
+
+
+ Map<String, Object> result = scraperCommand.execute(new AuthWebScraping(adapter)); //Scraping con login
+ Map<String, Object> result = scraperCommand.execute(new WebScraping(adapter)); //Scraping sin login
+
+
+ Map<String, Object> result = scraperCommand.execute(new AuthWebScraping(adapter), metaModel); //Scraping con la función buildExtractor (o solo un step) y con login
+ Map<String, Object> result = scraperCommand.execute(new WebScraping(adapter), metaModel); //Scraping con la función buildExtractor (o solo un step)
+
+ //Los metodos con MetaModel no influye las configuraciones del constructores con valores
  
 ```
 
-```java
-JSoupAdapter adapter = new JSoupAdapter();
-MetaModel metaModel = new MetaModel("consult", "https://techandsolve.com/category/developer-e1533574812739/", "GET");
-metaModel.setSelector("body > div > div.container");
-SingleScraperCommand scraperCommand = new SingleScraperCommand(metaModel);
-Map<String, Object> result = scraperCommand.execute(new ImpWebScraping(adapter)); // este scraping debe proporcinal el unico selector (.setSelector) 
-```
+
 
 ## Uso de la Interfaz Selector ##
 

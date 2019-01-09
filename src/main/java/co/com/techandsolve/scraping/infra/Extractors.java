@@ -18,13 +18,11 @@ import java.util.function.Consumer;
 public class Extractors {
     private Map<String, Consumer<MetaModel>> extractorsList;
     private ModelState modelState;
-    private Consumer<MetaModel> extractor;
 
 
-    Extractors(Map<String, Consumer<MetaModel>> extractorsList, ModelState modelState, Consumer<MetaModel> extractor) {
+    Extractors(Map<String, Consumer<MetaModel>> extractorsList, ModelState modelState) {
         this.extractorsList = extractorsList;
         this.modelState = modelState;
-        this.extractor = extractor;
     }
 
     public static ExtractorsBuilder builder(DocumentPort port) {
@@ -53,18 +51,19 @@ public class Extractors {
 
     public void runWithModel(MetaModel model) {
         MetaModel stateModel = modelState.getMetaModel();
-        model.setQuery(stateModel.getQuery());
-        model.setPath(stateModel.getPath());
-        model.getData().putAll(stateModel.getData());
-        model.getHeader().putAll(stateModel.getHeader());
-        modelState.setStateModel(model);
-        extractor.accept(model);
+        extractorsList.keySet().forEach(name -> {
+            model.setQuery(stateModel.getQuery());
+            model.setPath(stateModel.getPath());
+            model.getData().putAll(stateModel.getData());
+            model.getHeader().putAll(stateModel.getHeader());
+            modelState.setStateModel(model);
+            extractorsList.get(name).accept(model);
+        });
     }
 
     public static class ExtractorsBuilder {
 
         private LinkedHashMap<String, Consumer<MetaModel>> extractorsList;
-        private Consumer<MetaModel> extractor;
         private DocumentPort port;
         private ModelState modelState;
 
@@ -93,21 +92,25 @@ public class Extractors {
             return this;
         }
 
-        public ExtractorsBuilder setSelector(String label, Selector<Element> func) {
-            this.extractor = metalModel -> {
+        public Extractors buildExtractor(String name, Selector<Element> func) {
+            if (this.extractorsList == null) {
+                this.extractorsList = new LinkedHashMap<>();
+            }
+
+            this.extractorsList.put(name, metalModel -> {
                 String selector = metalModel.getSelector();
                 port.connect(metalModel);
                 port.execute();
                 Document document = port.parse();
                 Element element = document.selectFirst(selector);
-                func.accept(label, modelState, element);
-            };
-            return this;
+                func.accept(name, modelState, element);
+            });
+            return build();
         }
 
 
         public Extractors build() {
-            return new Extractors(extractorsList, modelState, extractor);
+            return new Extractors(extractorsList, modelState);
         }
 
     }
