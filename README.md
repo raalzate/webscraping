@@ -24,8 +24,18 @@ La clase ***Extractors**** es un builder que ayuda a construir los pasos que se 
 ```java  
 Extractors.builder(jSoupAdapter) // Adaptador que tiene el puerto para poder realizar la conexión, ejecución y parse
                 .setState(modelState) // el objeto que tiene como objetivo cambiar los estados
-                .step("tag",func) // el primer paso con su respectiva funciona selectora 
+                .step("label",func) // el primer paso con su respectiva funciona selectora y el label del metamodelo
                 .build() // el constructor de los pasos
+```  
+
+**OTRO EJEMPLO SIN UNSAR LOS LABEL DE META MODELO**
+
+Este ejemplo no requiere tener un flujo de pasos, solo realiza la extracción.
+
+```java
+Extractors.builder(jSoupAdapter)// Adaptador que tiene el puerto para poder realizar la conexión, ejecución y parse
+                .setState(modelState)// el objeto que tiene como objetivo cambiar los estados
+                .buildExtractor("label",func);//  el label y funciona selectora
 ```  
 
 **EJEMPLO DE USO PARA EL METODO BUILD**
@@ -97,7 +107,7 @@ Este archivo se ubica en ***resource/metadata.json***
 **MODELO CLASS**
 
 ```java
-public class MetalModel {
+public class MetaModel {
     private String type;
     private String action;
     private String method;
@@ -114,7 +124,7 @@ DocumentPort es una interfaz que permite determinar el Documento(org.jsoup.nodes
 
 ```java
 public interface DocumentPort {
-    void connect(MetalModel model);
+    void connect(MetaModel model);
     void execute();
     Document parse();
 }
@@ -129,7 +139,7 @@ public class JSoupAdapter implements DocumentPort {
     private Connection.Response result;
 
     @Override
-    public void connect(MetalModel model) {
+    public void connect(MetaModel model) {
         connection =  Jsoup.connect(model.getAction())
                 .cookies(CookieUtils.getCookies())
                 .method(getMethod(model.getMethod()))
@@ -161,14 +171,14 @@ public class JSoupAdapter implements DocumentPort {
 }
 ```
 
-## Ejecutar el Web Scraping ##
+## Ejecutar el Web Scraping (Commands) ##
 
 Para ejecutar el scraping en necesario usar el comando que provee la librería. La clase ScraperCommand tiene 4 configuraciones para ejecutarse:
 
 - Ejecuta con los valores definidos del Modelo(metadata) y el archivo por defecto(metadata.json) en la ruta por defecto
 - Ejecuta definiendo el archivo .JSON (metadata) partiendo del directorio resource
 - Ejecuta definiendo un modelo inicial 
-- Ejecuta definiendo el archivo .JSON (metadata) y el modelo inicial   
+- Ejecuta definiendo el archivo .JSON (metadata) y el modelo inicial
 
 El resultado de los comando siempre es el valor de extras que tiene acumulado en el estado del modelo (el objeto estado de modelo es un memento que permite tener en memora datos que son compartidos a través de los steps).
 
@@ -177,10 +187,27 @@ El resultado de los comando siempre es el valor de extras que tiene acumulado en
 
 ```java
  JSoupAdapter adapter = new JSoupAdapter();
- ScraperCommand scraperCommand = new ScraperCommand();
- Map<String, Object> result = scraperCommand.execute(new ImpWebScraping(adapter));
+
+
+ ScraperCommand scraperCommand = new ScraperCommand(); //con valores por defecto
+
+ ScraperCommand scraperCommand = new ScraperCommand(defaultMetaModel, metaModelFile);// un modelo inicial y un archivo metadata.json especifico
+ ScraperCommand scraperCommand = new ScraperCommand(defaultMetaModel);// un modelo inicial y  la ruta del archivo por defecto
+ ScraperCommand scraperCommand = new ScraperCommand(metaModelFile);// un archivo definido
+
+
+ Map<String, Object> result = scraperCommand.execute(new AuthWebScraping(adapter)); //Scraping con login
+ Map<String, Object> result = scraperCommand.execute(new WebScraping(adapter)); //Scraping sin login
+
+
+ Map<String, Object> result = scraperCommand.execute(new AuthWebScraping(adapter), metaModel); //Scraping con la función buildExtractor (o solo un step) y con login
+ Map<String, Object> result = scraperCommand.execute(new WebScraping(adapter), metaModel); //Scraping con la función buildExtractor (o solo un step)
+
+ //Los metodos con MetaModel no influye las configuraciones del constructores con valores
  
 ```
+
+
 
 ## Uso de la Interfaz Selector ##
 

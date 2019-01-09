@@ -30,6 +30,7 @@ public class BlogTnSWebScraping implements WebScraping {
             modelState1.getExtra().put(label, listTitle);
         });
 
+        modelState.getMetaModel().setQuery("soft=ASC");
 
         return Extractors.builder(jSoupAdapter)
                 .setState(modelState)

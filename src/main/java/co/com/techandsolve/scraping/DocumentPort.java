@@ -1,10 +1,10 @@
 package co.com.techandsolve.scraping;
 
-import co.com.techandsolve.scraping.infra.MetalModel;
+import co.com.techandsolve.scraping.infra.MetaModel;
 import org.jsoup.nodes.Document;
 
 public interface DocumentPort {
-    void connect(MetalModel model);
+    void connect(MetaModel model);
 
     void execute();
 

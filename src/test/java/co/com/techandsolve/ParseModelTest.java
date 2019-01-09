@@ -1,6 +1,6 @@
 package co.com.techandsolve;
 
-import co.com.techandsolve.scraping.infra.MetalModel;
+import co.com.techandsolve.scraping.infra.MetaModel;
 import co.com.techandsolve.scraping.infra.ParseModel;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.sun.xml.internal.xsom.impl.scd.Iterators;
@@ -56,7 +56,7 @@ public class ParseModelTest {
 
 
         ParseModel parseModel = new ParseModel(jsonNode);
-        MetalModel mm = parseModel.toParse("key");
+        MetaModel mm = parseModel.toParse("key");
 
         Assert.assertEquals("method[actionpath?query]:type --> selector", mm.toString());
 
@@ -84,7 +84,7 @@ public class ParseModelTest {
         when(jsonNode.get("key")).thenReturn(node);
 
         ParseModel parseModel = new ParseModel(jsonNode);
-        MetalModel mm = parseModel.toParse("key");
+        MetaModel mm = parseModel.toParse("key");
 
         Assert.assertEquals("value of arg", mm.getData().get("arg"));
         verify(jsonNode).get("key");
@@ -107,7 +107,7 @@ public class ParseModelTest {
         when(jsonNode.get("key")).thenReturn(node);
 
         ParseModel parseModel = new ParseModel(jsonNode);
-        MetalModel mm = parseModel.toParse("key");
+        MetaModel mm = parseModel.toParse("key");
 
         Assert.assertEquals("value of header", mm.getHeader().get("header"));
 

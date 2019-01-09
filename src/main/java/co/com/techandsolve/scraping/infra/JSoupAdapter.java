@@ -15,7 +15,7 @@ public class JSoupAdapter implements DocumentPort {
     private Connection.Response result;
 
     @Override
-    public void connect(MetalModel model) {
+    public void connect(MetaModel model) {
         connection = Jsoup.connect(model.getAction())
                 .cookies(CookieUtils.getCookies())
                 .method(getMethod(model.getMethod()))

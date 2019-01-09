@@ -31,12 +31,13 @@ public class ScraperCommandTest {
     @Test
     public void blogTnS_Single() {
         JSoupAdapter adapter = new JSoupAdapter();
-        MetalModel metalModel = new MetalModel("consult", "https://techandsolve.com/category/developer-e1533574812739/", "GET");
-        metalModel.setSelector("body > div > div.container");
-        SingleScraperCommand scraperCommand = new SingleScraperCommand(metalModel);
-        Map<String, Object> result = scraperCommand.execute(new BlogDevelopWebScraping(adapter));
+        MetaModel metaModel = new MetaModel("consult", "https://techandsolve.com/category/developer-e1533574812739/", "GET");
+        metaModel.setSelector("body > div > div.container");
+        ScraperCommand scraperCommand = new ScraperCommand();
+        Map<String, Object> result = scraperCommand.execute(new BlogDevelopWebScraping(adapter), metaModel);
 
         System.out.println(result);
+
     }
 
 

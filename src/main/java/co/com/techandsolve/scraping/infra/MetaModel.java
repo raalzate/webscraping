@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public class MetalModel {
+public class MetaModel {
     private String type;
     private String action;
     private String method;
@@ -16,7 +16,7 @@ public class MetalModel {
     private Map<String, String> header;
 
 
-    public MetalModel(String type, String action, String method) {
+    public MetaModel(String type, String action, String method) {
         this.type = type;
         this.action = action;
         this.method = method;
@@ -32,7 +32,7 @@ public class MetalModel {
     }
 
     public String getAction() {
-        return action + path + query;
+        return action + getPath() + getQuery();
     }
 
     public Map<String, String> getData() {
@@ -70,9 +70,8 @@ public class MetalModel {
     public void setQuery(String query) {
         Optional.ofNullable(query)
                 .filter(q -> !"".equals(q))
-                .map(q -> q.replace("?", ""))
                 .ifPresent(q ->
-                        this.query = "?" + query
+                        this.query = "?" + query.replace("?", "")
                 );
 
     }

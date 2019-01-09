@@ -13,11 +13,11 @@ import java.io.IOException;
 
 public class HtmlUnitAdapter implements DocumentPort {
     private WebClient webClient;
-    private MetalModel model;
+    private MetaModel model;
     private HtmlPage page;
 
     @Override
-    public void connect(MetalModel model) {
+    public void connect(MetaModel model) {
         webClient = new WebClient(BrowserVersion.CHROME);
         webClient.setCssErrorHandler(new SilentCssErrorHandler());
         webClient.getOptions().setCssEnabled(false);

@@ -23,13 +23,12 @@ public class BlogDevelopWebScraping implements WebScraping {
     public Extractors build(ModelState modelState) {
         return Extractors.builder(jSoupAdapter)
                 .setState(modelState)
-                .setSelector("blogDevelop", new DefaultSelector().andThen((label, modelState1, element) -> {
+                .buildExtractor("blogDevelop", new DefaultSelector().andThen((label, modelState1, element) -> {
                     List<String> listTitle = element.select(".panel-heading")
                             .stream()
                             .map(Element::text)
                             .collect(Collectors.toList());
                     modelState1.getExtra().put(label, listTitle);
-                }))
-                .build();
+                }));
     }
 }
