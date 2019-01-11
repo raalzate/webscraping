@@ -6,9 +6,9 @@ import java.util.Map;
 import java.util.Optional;
 
 public class MetaModel {
-    private String type;
-    private String action;
-    private String method;
+    private final String type;
+    private final String action;
+    private final String method;
     private String path;
     private String query;
     private String selector;

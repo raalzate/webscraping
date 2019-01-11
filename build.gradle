@@ -12,6 +12,7 @@ repositories {
 dependencies {
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:2.+'
+    testCompile 'commons-collections:commons-collections:3.2.2'
 
     compile 'org.jsoup:jsoup:1.11.3'
     compile 'com.fasterxml.jackson.core:jackson-core:2.6.3'

@@ -1,7 +1,9 @@
 package co.com.techandsolve.scraping.infra;
 
 import co.com.techandsolve.scraping.DocumentPort;
-import co.com.techandsolve.scraping.selector.Selector;
+import co.com.techandsolve.scraping.Selector;
+import co.com.techandsolve.scraping.exception.ExtractorException;
+import co.com.techandsolve.scraping.selector.HtmlSelector;
 import co.com.techandsolve.scraping.state.ModelState;
 import co.com.techandsolve.scraping.utils.MetalModelFileUtils;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -10,19 +12,23 @@ import org.jsoup.nodes.Element;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
  * Created by Raul .A Alzate raul.alzate@techandsolve.com on 20/12/2018.
  */
 public class Extractors {
-    private Map<String, Consumer<MetaModel>> extractorsList;
-    private ModelState modelState;
+    private final Map<String, Consumer<MetaModel>> extractorsList;
+    private final ModelState modelState;
 
 
-    Extractors(Map<String, Consumer<MetaModel>> extractorsList, ModelState modelState) {
+    private Extractors(Map<String, Consumer<MetaModel>> extractorsList, ModelState modelState) {
         this.extractorsList = extractorsList;
         this.modelState = modelState;
+        Objects.requireNonNull(modelState, "Se debe definir primero el estado del modelo para almacenar los resultado, " +
+                        "ver el mentodo setState(ModelState) de la clase Extractors.");
+
     }
 
     public static ExtractorsBuilder builder(DocumentPort port) {
@@ -31,17 +37,25 @@ public class Extractors {
 
     public void run(String file) {
         final JsonNode jsonNode = MetalModelFileUtils.getMetadata(file);
+
+        Objects.requireNonNull(jsonNode, "No se encontro ninguna información del archivo, verificar bien la ruta => "+file);
+
         final ParseModel parseModel = new ParseModel(jsonNode);
 
         extractorsList.keySet().forEach(name -> {
-            MetaModel model = parseModel.toParse(name);
-            MetaModel stateModel = modelState.getMetaModel();
-            model.setQuery(stateModel.getQuery());
-            model.setPath(stateModel.getPath());
-            model.getData().putAll(stateModel.getData());
-            model.getHeader().putAll(stateModel.getHeader());
-            modelState.setStateModel(model);
-            extractorsList.get(name).accept(model);
+            try{
+                MetaModel model = parseModel.toParse(name);
+                MetaModel stateModel = modelState.getMetaModel();
+                model.setQuery(stateModel.getQuery());
+                model.setPath(stateModel.getPath());
+                model.getData().putAll(stateModel.getData());
+                model.getHeader().putAll(stateModel.getHeader());
+                modelState.setMetaModel(model);
+                extractorsList.get(name).accept(model);
+            } catch (Exception e){
+                throw new ExtractorException("Se presenta una incisistencia con parse de la meta data, revisar que el key =>"+name, e);
+            }
+
         });
     }
 
@@ -56,15 +70,15 @@ public class Extractors {
             model.setPath(stateModel.getPath());
             model.getData().putAll(stateModel.getData());
             model.getHeader().putAll(stateModel.getHeader());
-            modelState.setStateModel(model);
+            modelState.setMetaModel(model);
             extractorsList.get(name).accept(model);
         });
     }
 
     public static class ExtractorsBuilder {
 
+        private final DocumentPort port;
         private LinkedHashMap<String, Consumer<MetaModel>> extractorsList;
-        private DocumentPort port;
         private ModelState modelState;
 
         ExtractorsBuilder(DocumentPort port) {
@@ -74,6 +88,11 @@ public class Extractors {
         public ExtractorsBuilder setState(ModelState modelState) {
             this.modelState = modelState;
             return this;
+        }
+
+
+        public ExtractorsBuilder step(String name) {
+            return step(name, new HtmlSelector());
         }
 
         public ExtractorsBuilder step(String name, Selector<Element> func) {
@@ -90,6 +109,10 @@ public class Extractors {
                 func.accept(name, modelState, element);
             });
             return this;
+        }
+
+        public Extractors buildExtractor(String name){
+            return buildExtractor(name, new HtmlSelector());
         }
 
         public Extractors buildExtractor(String name, Selector<Element> func) {

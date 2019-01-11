@@ -1,4 +1,4 @@
-package co.com.techandsolve.scraping.selector;
+package co.com.techandsolve.scraping;
 
 
 import co.com.techandsolve.scraping.state.ModelState;
