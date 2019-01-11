@@ -25,7 +25,7 @@ Map<String, Object> result = new ScraperCommand()
 
 System.out.println(result);
 ```
-Para tener mas detalle de la ejecución del Scraping entrar [aquí](2.-Ejecutar-el-Web-Scraping-(Commands))
+Para tener mas detalle de la ejecución del Scraping entrar [aquí](https://gitlab.techandsolve.com/techandsolve_arquetipos/scraping/wikis/home)
 
 ## Instalarla
  
