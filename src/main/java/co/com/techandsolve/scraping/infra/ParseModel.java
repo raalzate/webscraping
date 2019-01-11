@@ -3,16 +3,16 @@ package co.com.techandsolve.scraping.infra;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by Raul .A Alzate raul.alzate@techandsolve.com on 20/12/2018.
  */
 public class ParseModel {
 
-    private JsonNode jsonNode;
+    private final JsonNode jsonNode;
 
     public ParseModel(JsonNode jsonNode) {
         this.jsonNode = jsonNode;
@@ -32,8 +32,8 @@ public class ParseModel {
         String action = getStringNode(node, "action");
         String type = getStringNode(node, "type");
         String selector = getStringNode(node, "selector");
-        Map<String, String> data = new HashMap<>();
-        Map<String, String> header = new HashMap<>();
+        Map<String, String> data = new ConcurrentHashMap<>();
+        Map<String, String> header = new ConcurrentHashMap<>();
 
         getMapNode(node, "data")
                 .forEachRemaining(

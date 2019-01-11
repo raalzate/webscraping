@@ -13,7 +13,7 @@ public class ScraperCommand {
 
     public ScraperCommand(MetaModel defaultMetaModel, String metaModelFile) {
         this.modelState = new ModelState();
-        this.modelState.setStateModel(defaultMetaModel);
+        this.modelState.setMetaModel(defaultMetaModel);
         this.metaModelFile = metaModelFile;
     }
 

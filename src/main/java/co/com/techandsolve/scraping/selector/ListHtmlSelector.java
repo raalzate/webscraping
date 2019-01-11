@@ -16,7 +16,7 @@ public class ListHtmlSelector implements Selector<Element> {
                 .map(Element::html)
                 .collect(Collectors.toList());
 
-        modelState.setStateModel(null)
+        modelState.setMetaModel(null)
                 .putExtra(label, result);
     }
 }

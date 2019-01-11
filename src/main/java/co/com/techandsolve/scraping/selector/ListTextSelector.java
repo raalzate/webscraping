@@ -16,7 +16,7 @@ public class ListTextSelector implements Selector<Element> {
                 .map(Element::text)
                 .collect(Collectors.toList());
 
-        modelState.setStateModel(null)
+        modelState.setMetaModel(null)
                 .putExtra(label, result);
     }
 }

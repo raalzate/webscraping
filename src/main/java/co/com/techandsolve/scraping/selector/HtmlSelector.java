@@ -8,7 +8,7 @@ import org.jsoup.nodes.Element;
 public class HtmlSelector implements Selector<Element> {
     @Override
     public void accept(String label, ModelState modelState, Element element) {
-        modelState.setStateModel(null)
+        modelState.setMetaModel(null)
                 .putExtra(label, element.html());
     }
 }

@@ -1,9 +1,9 @@
 package co.com.techandsolve.scraping.infra;
 
 import co.com.techandsolve.scraping.DocumentPort;
+import co.com.techandsolve.scraping.Selector;
 import co.com.techandsolve.scraping.exception.ExtractorException;
 import co.com.techandsolve.scraping.selector.HtmlSelector;
-import co.com.techandsolve.scraping.Selector;
 import co.com.techandsolve.scraping.state.ModelState;
 import co.com.techandsolve.scraping.utils.MetalModelFileUtils;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -12,23 +12,23 @@ import org.jsoup.nodes.Element;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
  * Created by Raul .A Alzate raul.alzate@techandsolve.com on 20/12/2018.
  */
 public class Extractors {
-    private Map<String, Consumer<MetaModel>> extractorsList;
-    private ModelState modelState;
+    private final Map<String, Consumer<MetaModel>> extractorsList;
+    private final ModelState modelState;
 
 
-    Extractors(Map<String, Consumer<MetaModel>> extractorsList, ModelState modelState) {
+    private Extractors(Map<String, Consumer<MetaModel>> extractorsList, ModelState modelState) {
         this.extractorsList = extractorsList;
         this.modelState = modelState;
-        Optional.ofNullable(modelState)
-                .orElseThrow(() -> new ExtractorException("Se debe definir primero el estado del modelo para almacenar los resultado, " +
-                        "ver el mentodo setState(ModelState) de la clase Extractors."));
+        Objects.requireNonNull(modelState, "Se debe definir primero el estado del modelo para almacenar los resultado, " +
+                        "ver el mentodo setState(ModelState) de la clase Extractors.");
+
     }
 
     public static ExtractorsBuilder builder(DocumentPort port) {
@@ -38,8 +38,7 @@ public class Extractors {
     public void run(String file) {
         final JsonNode jsonNode = MetalModelFileUtils.getMetadata(file);
 
-        Optional.ofNullable(jsonNode)
-                .orElseThrow(() -> new ExtractorException("No se encontro ninguna información del archivo, verificar bien la ruta => "+file));
+        Objects.requireNonNull(jsonNode, "No se encontro ninguna información del archivo, verificar bien la ruta => "+file);
 
         final ParseModel parseModel = new ParseModel(jsonNode);
 
@@ -51,10 +50,10 @@ public class Extractors {
                 model.setPath(stateModel.getPath());
                 model.getData().putAll(stateModel.getData());
                 model.getHeader().putAll(stateModel.getHeader());
-                modelState.setStateModel(model);
+                modelState.setMetaModel(model);
                 extractorsList.get(name).accept(model);
             } catch (Exception e){
-                throw new ExtractorException("Se presenta una incisistencia con parse de la meta data, revisar que el key =>"+name);
+                throw new ExtractorException("Se presenta una incisistencia con parse de la meta data, revisar que el key =>"+name, e);
             }
 
         });
@@ -71,15 +70,15 @@ public class Extractors {
             model.setPath(stateModel.getPath());
             model.getData().putAll(stateModel.getData());
             model.getHeader().putAll(stateModel.getHeader());
-            modelState.setStateModel(model);
+            modelState.setMetaModel(model);
             extractorsList.get(name).accept(model);
         });
     }
 
     public static class ExtractorsBuilder {
 
+        private final DocumentPort port;
         private LinkedHashMap<String, Consumer<MetaModel>> extractorsList;
-        private DocumentPort port;
         private ModelState modelState;
 
         ExtractorsBuilder(DocumentPort port) {

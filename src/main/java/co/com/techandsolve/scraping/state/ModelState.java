@@ -11,29 +11,9 @@ import java.util.Optional;
  * Created by Raul .A Alzate raul.alzate@techandsolve.com on 20/12/2018.
  */
 public class ModelState {
-    private MetaModel model;
-    private ExtraData extraData;
 
-    public ModelState() {
-        this.model = ParseModel.getModel();
-        this.extraData = new ExtraData();
-    }
-
-    public MetaModel getMetaModel() {
-        return model;
-    }
-
-
-    public ExtraData setStateModel(MetaModel model) {
-        Optional.ofNullable(model).ifPresent(m -> this.model = m);
-        return extraData;
-    }
-
-    public Map<String, Object> getExtra() {
-        return extraData.extra;
-    }
-
-    public static class ExtraData {
+    private final ExtraData extraData;
+    public static final class ExtraData {
         private Map<String, Object> extra;
 
         ExtraData() {
@@ -45,5 +25,27 @@ public class ModelState {
             return this;
         }
     }
+    private MetaModel model;
+
+    public ModelState() {
+        this.model = ParseModel.getModel();
+        this.extraData = new ExtraData();
+    }
+
+    public MetaModel getMetaModel() {
+        return model;
+    }
+
+
+    public ExtraData setMetaModel(MetaModel model) {
+        Optional.ofNullable(model).ifPresent(m -> this.model = m);
+        return extraData;
+    }
+
+    public Map<String, Object> getExtra() {
+        return extraData.extra;
+    }
+
+
 
 }

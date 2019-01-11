@@ -6,13 +6,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 /**
  * Created by Raul .A Alzate raul.alzate@techandsolve.com on 20/12/2018.
  */
-public class MetalModelFileUtils {
+public final class MetalModelFileUtils {
     private static final String META_DATA_FILE = "metadata.json";
-    private static ObjectMapper mapper = new ObjectMapper();
+    private static final ObjectMapper mapper = new ObjectMapper();
+    private static final Logger logger = Logger.getGlobal();
 
     private MetalModelFileUtils() {
     }
@@ -21,12 +23,12 @@ public class MetalModelFileUtils {
         String metaModelFile = Optional.ofNullable(file)
                 .orElse(META_DATA_FILE);
         InputStream exampleInput =
-                MetalModelFileUtils.class.getClassLoader()
+                Thread.currentThread().getContextClassLoader()
                         .getResourceAsStream(metaModelFile);
         try {
             return mapper.readTree(exampleInput);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.info(e.getMessage());
         }
         return null;
     }

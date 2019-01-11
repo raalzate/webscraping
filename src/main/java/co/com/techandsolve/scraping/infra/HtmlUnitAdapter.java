@@ -34,7 +34,7 @@ public class HtmlUnitAdapter implements DocumentPort {
             page = webClient.getPage(model.getAction());
             webClient.closeAllWindows();
         } catch (IOException e) {
-            throw new DocumentException(e.getMessage());
+            throw new DocumentException(e.getMessage(), e);
         }
     }
 
