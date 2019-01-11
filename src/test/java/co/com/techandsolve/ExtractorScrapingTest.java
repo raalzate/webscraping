@@ -5,6 +5,7 @@ import co.com.techandsolve.example.BlogTnSWebScraping;
 import co.com.techandsolve.scraping.infra.JSoupAdapter;
 import co.com.techandsolve.scraping.infra.MetaModel;
 import co.com.techandsolve.scraping.state.ModelState;
+import org.apache.commons.io.IOUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.Assert;
@@ -15,6 +16,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -81,8 +84,9 @@ public class ExtractorScrapingTest {
 
 
     private String getHtml() throws IOException {
-        URL url = ExtractorScrapingTest.class.getClassLoader().getResource("html/mock-eg.html");
-        byte[] encoded = Files.readAllBytes(Paths.get(url.getPath()));
-        return new String(encoded, StandardCharsets.UTF_8);
+        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("html/mock-eg.html");
+        StringWriter writer = new StringWriter();
+        IOUtils.copy(inputStream, writer, StandardCharsets.UTF_8);
+        return writer.toString();
     }
 }

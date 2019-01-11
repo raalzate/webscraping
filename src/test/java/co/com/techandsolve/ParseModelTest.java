@@ -3,13 +3,14 @@ package co.com.techandsolve;
 import co.com.techandsolve.scraping.infra.MetaModel;
 import co.com.techandsolve.scraping.infra.ParseModel;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.sun.xml.internal.xsom.impl.scd.Iterators;
+import org.apache.commons.collections.IteratorUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -75,7 +76,7 @@ public class ParseModelTest {
         when(dataNode.asText()).thenReturn("value of arg");
         Map.Entry<String, JsonNode> entry = new HashMap.SimpleEntry<>("arg", dataNode);
 
-        Iterator<Map.Entry<String, JsonNode>> entryIterator = Iterators.singleton(entry);
+        Iterator<Map.Entry<String, JsonNode>> entryIterator = IteratorUtils.singletonIterator(entry);
 
         JsonNode data = mock(JsonNode.class);
         when(data.fields()).thenReturn(entryIterator);
@@ -98,7 +99,7 @@ public class ParseModelTest {
         JsonNode headerNode = mock(JsonNode.class);
         when(headerNode.asText()).thenReturn("value of header");
         Map.Entry<String, JsonNode> entry = new HashMap.SimpleEntry<>("header", headerNode);
-        Iterator<Map.Entry<String, JsonNode>> entryIterator = Iterators.singleton(entry);
+        Iterator<Map.Entry<String, JsonNode>> entryIterator = IteratorUtils.singletonIterator(entry);
 
         JsonNode header = mock(JsonNode.class);
         when(header.fields()).thenReturn(entryIterator);
