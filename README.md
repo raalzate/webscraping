@@ -1,252 +1,60 @@
  ## Scraping Library ##
 
-Usando esta librería ayuda a realizar web scraping de un forma  mas fácil y ágil. Apoyándose de la librería JSpoup para poder extraer el documento HTML para generar un mecanismos de navegación usando los selectores. 
+Usando esta librería ayuda a realizar [Web Scraping](https://es.wikipedia.org/wiki/Web_scraping) de un forma  mas fácil y ágil, apoyándose de la librería [JSoup](https://jsoup.org/) para poder extraer el documento HTML. En este caso no es necesario generar un mecanismos de navegación usando WebDriver. 
 
-Proporciona una adaptación de conexión, ejecución y transformación, para poder de forma diferente realizar la extracción ya sea de forma local o remota, usando diferentes mecanismo ya sea JSpoup o Htmlunit.
+Proporciona una adaptación de conexión, ejecución y transformación, para poder de forma diferente realizar la extracción ya sea de forma local o remota, usando diferentes mecanismo ya sea [JSoup](https://jsoup.org/) o [Htmlunit](http://htmlunit.sourceforge.net/).
 
-Internamente para la definiciones de las acciones para la cual se desea realiza web scraping se realiza a travez de un archivo JSON, con el objetivo de parametrizar y configurar de forma fácil. Este archivo contiene los modelos que puede ser modificados en tiempo de ejecución. 
+Internamente para la definiciones de las acciones para la cual se desea realiza Web Scraping se realiza a través de un archivo externo JSON, con el objetivo de parametrizar y configurar de forma fácil, este archivo contiene las acciones que puede ser modificados en tiempo de ejecución. 
 
-## Uso de la Interfaz WebScraping ##
+**EJEMPLO PARA OBTENER EL PRONOSTICO DEL TIEMPO**
 
-Esta interfaz tiene como objetivo definir los pasos para la extracción, estos pasos se debe definir a travez del archivo JSON. A su vez recibe como argumento un estado del modelo, este tiene dos propósitos, alterar el modelo y acumular información en un mapa. 
+Usando el buscador de google podemos obtener el pronostico del tiempo en donde estemos.
 
 ```java
-public interface WebScraping {
-    Extractors build(ModelState modelState);
-}
+
+String url = "https://www.google.com.co/search?q=pronostico+de+tiempo";
+
+MetaModel metaModel = new MetaModel("consult", url, "GET");
+metaModel.setSelector("#wob_tm");
+
+Map<String, Object> result = new ScraperCommand()
+            .execute(modelState -> Extractors.builder(new JSoupAdapter())
+                        .setState(modelState)
+                        .buildExtractor("dato_c", new TextSelector()), 
+             metaModel);
+
+System.out.println(result);
 ```
+Para tener mas detalle de la ejecución del Scraping entrar [aquí](2.-Ejecutar-el-Web-Scraping-(Commands))
 
-#### Ejemplo del Extractors Class ####
-
-
-La clase ***Extractors**** es un builder que ayuda a construir los pasos que se ejecuta la extracción, estos paso son los definidos en el modelo de datos del archivo .JSON.
-
-```java  
-Extractors.builder(jSoupAdapter) // Adaptador que tiene el puerto para poder realizar la conexión, ejecución y parse
-                .setState(modelState) // el objeto que tiene como objetivo cambiar los estados
-                .step("label",func) // el primer paso con su respectiva funciona selectora y el label del metamodelo
-                .build() // el constructor de los pasos
-```  
-
-**OTRO EJEMPLO SIN UNSAR LOS LABEL DE META MODELO**
-
-Este ejemplo no requiere tener un flujo de pasos, solo realiza la extracción.
-
-```java
-Extractors.builder(jSoupAdapter)// Adaptador que tiene el puerto para poder realizar la conexión, ejecución y parse
-                .setState(modelState)// el objeto que tiene como objetivo cambiar los estados
-                .buildExtractor("label",func);//  el label y funciona selectora
-```  
-
-**EJEMPLO DE USO PARA EL METODO BUILD**
-
-```java  
-public Extractors build(ModelState modelState) {
-        Selector<Element> func = new DefaultSelector().andThen((label, modelState1, element) -> {
-            List<String> listTitle = element.select(".panel-heading")
-                    .stream()
-                    .map(Element::text)
-                    .collect(Collectors.toList());
-            modelState1.getExtra().put(label, listTitle);
-        });
-
-
-        return Extractors.builder(jSoupAdapter)
-                .setState(modelState)
-                .step("consultaBlogDeveloper",func)
-                .step("consultaBlogMachineLearning",func)
-                .step("consultaBlogIoT",func)
-                .build();
- }
-```
-
-**IMPORTANTE**: El estado del modelo trabaja como un memento entre steps, donde se acumula datos o resultados del scraping, en el ejemplo  ``` modelState1.getExtra().put(label, listTitle) ```, estamos guardando una llave según el label y el valor con el resultado esperado.
-
-#### Ejemplo de la Meta Data ####
-
-Este archivo se ubica en ***resource/metadata.json***
-
-```json
-{
-
- "consultaBlogDeveloper": {
-   "type": "consult",
-   "action": "https://techandsolve.com/category/developer-e1533574812739/",
-   "method": "GET",
-   "selector": "body > div > div.container"
- },
-
-  "consultaBlogs": {
-    "type": "consult",
-    "action": "https://techandsolve.com",
-    "method": "GET",
-    "query": "category=developer-e1533574812739",
-   "selector": "body > div > div.container"
-  },
-
-  "consultaBlogMachineLearning": {
-    "type": "consult",
-    "action": "https://techandsolve.com/category/machinelearn/",
-    "method": "GET",
-    "selector": "body > div > div.container"
-  },
-}
-``` 
-
-| Propiedad  | Descripción |
-| ------------- | ------------- |
-| action  | url absoluta  |
-| type  | cualquier cadena  |
-| header  | objecto key-value |
-| data  | objecto key-value  |
-| method  | GET,POST  |
-| selector  | Selector CSS  |
-| path  | Parametro amigable  |
-| query  | Query Param del Request  |
-
-**MODELO CLASS**
-
-```java
-public class MetaModel {
-    private String type;
-    private String action;
-    private String method;
-    private String path;
-    private String query;
-    private String selector;
-    private Map<String, String> data;
-    private Map<String, String> header;
-}
-```
-## Uso de la Interfaz DocumentPort ##
-
-DocumentPort es una interfaz que permite determinar el Documento(org.jsoup.nodes.Document), funciona como protocolo del Extractors dado que por cada step(paso) se realiza el connect, execute y parse respectivamente. 
-
-```java
-public interface DocumentPort {
-    void connect(MetaModel model);
-    void execute();
-    Document parse();
-}
-```
-
-**EJEMPLO DE USO**
-
-```java
-public class JSoupAdapter implements DocumentPort {
-
-    private Connection connection;
-    private Connection.Response result;
-
-    @Override
-    public void connect(MetaModel model) {
-        connection =  Jsoup.connect(model.getAction())
-                .cookies(CookieUtils.getCookies())
-                .method(getMethod(model.getMethod()))
-                .data(model.getData())
-                .followRedirects(true);
-    }
-
-    @Override
-    public void execute() {
-        try {
-            result = connection.execute();
-        } catch (IOException e) {
-           throw new DocumentException(e.getMessage());
-        }
-    }
-
-    @Override
-    public Document parse() {
-        try {
-            return result.parse();
-        } catch (IOException e) {
-            throw new DocumentException(e.getMessage());
-        }
-    }
-
-    private Connection.Method getMethod(String method){
-        return Connection.Method.valueOf(method.toUpperCase());
-    }
-}
-```
-
-## Ejecutar el Web Scraping (Commands) ##
-
-Para ejecutar el scraping en necesario usar el comando que provee la librería. La clase ScraperCommand tiene 4 configuraciones para ejecutarse:
-
-- Ejecuta con los valores definidos del Modelo(metadata) y el archivo por defecto(metadata.json) en la ruta por defecto
-- Ejecuta definiendo el archivo .JSON (metadata) partiendo del directorio resource
-- Ejecuta definiendo un modelo inicial 
-- Ejecuta definiendo el archivo .JSON (metadata) y el modelo inicial
-
-El resultado de los comando siempre es el valor de extras que tiene acumulado en el estado del modelo (el objeto estado de modelo es un memento que permite tener en memora datos que son compartidos a través de los steps).
-
-
-**EJEMPLO DE USO**
-
-```java
- JSoupAdapter adapter = new JSoupAdapter();
-
-
- ScraperCommand scraperCommand = new ScraperCommand(); //con valores por defecto
-
- ScraperCommand scraperCommand = new ScraperCommand(defaultMetaModel, metaModelFile);// un modelo inicial y un archivo metadata.json especifico
- ScraperCommand scraperCommand = new ScraperCommand(defaultMetaModel);// un modelo inicial y  la ruta del archivo por defecto
- ScraperCommand scraperCommand = new ScraperCommand(metaModelFile);// un archivo definido
-
-
- Map<String, Object> result = scraperCommand.execute(new AuthWebScraping(adapter)); //Scraping con login
- Map<String, Object> result = scraperCommand.execute(new WebScraping(adapter)); //Scraping sin login
-
-
- Map<String, Object> result = scraperCommand.execute(new AuthWebScraping(adapter), metaModel); //Scraping con la función buildExtractor (o solo un step) y con login
- Map<String, Object> result = scraperCommand.execute(new WebScraping(adapter), metaModel); //Scraping con la función buildExtractor (o solo un step)
-
- //Los metodos con MetaModel no influye las configuraciones del constructores con valores
+## Instalarla
  
-```
+Ir a los [tags](https://gitlab.techandsolve.com/techandsolve_arquetipos/scraping/tags) del repositorio para descargar el jar. 
+ 
+## Contribución
+ 
+1. Crea tu rama de características: `git checkout -b feature/my-feat`
+2. Confirma tus cambios: `git commit -am 'Agrega alguna característica'
+3. Empuje a la rama: `git push origin feature/my-feat`
+4. Presentar una Merge Requests
 
+ 
+## Historia
+ 
+Versión 1.2 (2019-01-09) - Ajustes en los comandos
+ 
+## Créditos
+ 
+Lead Developer - Raul .A Alzate (@raul.alzate)
+ 
+## Licencia 
+ 
+The MIT License (MIT)
 
+Copyright (c) 2015 Chris Kibble
 
-## Uso de la Interfaz Selector ##
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
-Un selector es un función que permite consumir el elemento extraído por el scraping, un selector es el encargado en muchas de las ocaciones de acumular la respuesta requerida, por ese motivo el método de la interfaz recibe como argumento el label o tag, el estado del modelo y elemento.
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
-```java
-
-public interface Selector<E extends Element> {
-    void accept(String label, ModelState modelState, E element);
-    default Selector<E> andThen(Selector<Element> after) {
-        Objects.requireNonNull(after);
-        return (String l, ModelState m, E e) -> { accept(l, m, e); after.accept(l, m, e); };
-    }
-}
-```
-**EJEMPLO DE USO**
-
-```java
-
-public class DefaultSelector implements Selector<Element> {
-    @Override
-    public void accept(String label, ModelState modelState, Element element) {
-        modelState.setStateModel(null)
-                .putExtra(label, element.html());
-    }
-}
-```
-
-## Uso de la clase ModelState ##
-
-La clase ModelState tiene dos propósitos, el primero es guardar estados de los steps a través del metodo Extra (Map<String, Object>), y el segundo es alterar el modelo del siguiente step.
-
-El siguiente ejemplo no definimos ningún modelo y agregamos un valor al extra con la llave tag.
-
-```java
-
-modelState.setStateModel(null)
-                .putExtra("tag", element.html());
-```
-
-**IMPORTANTE:** al ejecutar el comando siempre retorna los extras, por cada selector se debería tener uno o mas extra como resulta final del scraping.
-
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
