@@ -1,6 +1,6 @@
 package co.com.techandsolve.scraping;
 
-import co.com.techandsolve.scraping.infra.Extractors;
+import co.com.techandsolve.scraping.scraper.Extractors;
 import co.com.techandsolve.scraping.state.ModelState;
 
 public interface WebScraping {
