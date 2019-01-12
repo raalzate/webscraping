@@ -3,6 +3,7 @@ package co.com.techandsolve;
 import co.com.techandsolve.functional.example.BlogDevelopWebScraping;
 import co.com.techandsolve.functional.example.BlogTnSWebScraping;
 import co.com.techandsolve.scraping.adapter.JSoupAdapter;
+import co.com.techandsolve.scraping.scraper.Extractors;
 import co.com.techandsolve.scraping.scraper.MetaModel;
 import co.com.techandsolve.scraping.state.ModelState;
 import org.apache.commons.io.IOUtils;
@@ -80,6 +81,15 @@ public class ExtractorsTest {
 
     }
 
+    @Test(expected = NullPointerException.class)
+    public void throwNullForModelState(){
+        Extractors.builder(adapter).build().run();
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void throwNullForJsonFile(){
+        Extractors.builder(adapter).setState(new ModelState()).build().run("no-exist.json");
+    }
 
     private String getHtml() throws IOException {
         InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("html/mock-eg.html");

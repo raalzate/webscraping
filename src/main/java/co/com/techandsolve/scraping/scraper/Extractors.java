@@ -27,7 +27,7 @@ public class Extractors {
         this.extractorsList = extractorsList;
         this.modelState = modelState;
         Objects.requireNonNull(modelState, "Se debe definir primero el estado del modelo para almacenar los resultado, " +
-                "ver el mentodo setState(ModelState) de la clase Extractors.");
+                "ver el metodo setState(ModelState) de la clase Extractors.");
 
     }
 
