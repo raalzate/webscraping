@@ -13,23 +13,19 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 
-public class BlogTnSWebScraping implements WebScraping {
+public class BlogTnSWebScrapingError implements WebScraping {
 
     private DocumentPort jSoupAdapter;
     private ExtractorListener extractorListener;
 
-    public BlogTnSWebScraping(DocumentPort jSoupAdapter) {
+    public BlogTnSWebScrapingError(DocumentPort jSoupAdapter) {
         this.jSoupAdapter = jSoupAdapter;
     }
 
     @Override
     public Extractors build(ModelState modelState) {
         Selector<Element> func = new HtmlSelector().andThen((label, modelState1, element) -> {
-            List<String> listTitle = element.select(".panel-heading")
-                    .stream()
-                    .map(Element::text)
-                    .collect(Collectors.toList());
-            modelState1.getExtra().put(label, listTitle);
+           throw new RuntimeException();
         });
 
         modelState.getMetaModel().setQuery("soft=ASC");
@@ -38,10 +34,6 @@ public class BlogTnSWebScraping implements WebScraping {
                 .setState(modelState)
                 .setExtractorListener(extractorListener)
                 .step("consultaBlogDeveloper", func)
-                .step("consultaBlogMachineLearning", func)
-                .step("consultaBlogIoT", func)
-                .step("consultaBlogUX", func)
-                .step("consultaBlogProd", func)
                 .build();
     }
 

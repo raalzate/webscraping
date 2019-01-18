@@ -1,11 +1,12 @@
 package co.com.techandsolve.scraping.scraper;
 
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public class MetaModel {
+public class MetaModel  implements Serializable {
     private final String type;
     private final String action;
     private final String method;

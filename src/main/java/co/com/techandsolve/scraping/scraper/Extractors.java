@@ -1,7 +1,9 @@
 package co.com.techandsolve.scraping.scraper;
 
 import co.com.techandsolve.scraping.DocumentPort;
+import co.com.techandsolve.scraping.ExtractorListener;
 import co.com.techandsolve.scraping.Selector;
+import co.com.techandsolve.scraping.exception.DocumentException;
 import co.com.techandsolve.scraping.exception.ExtractorException;
 import co.com.techandsolve.scraping.helper.MetalModelFileHelper;
 import co.com.techandsolve.scraping.selector.HtmlSelector;
@@ -13,6 +15,7 @@ import org.jsoup.nodes.Element;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 /**
@@ -43,18 +46,20 @@ public class Extractors {
         final MetaModelUtils metaModelUtils = new MetaModelUtils(jsonNode);
 
         extractorsList.keySet().forEach(name -> {
+            MetaModel model = null;
             try {
-                MetaModel model = metaModelUtils.toParse(name);
-                MetaModel stateModel = modelState.getMetaModel();
-                model.setQuery(stateModel.getQuery());
-                model.setPath(stateModel.getPath());
-                model.getData().putAll(stateModel.getData());
-                model.getHeader().putAll(stateModel.getHeader());
-                modelState.setMetaModel(model);
-                extractorsList.get(name).accept(model);
+                model = metaModelUtils.toParse(name);
             } catch (Exception e) {
-                throw new ExtractorException("Se presenta una incisistencia con parse de la meta data, revisar que el key =>" + name, e);
+                throw new ExtractorException("Se presenta un problema con el parse de la meta data, revisar que el key =>" + name, e);
             }
+
+            MetaModel stateModel = modelState.getMetaModel();
+            model.setQuery(stateModel.getQuery());
+            model.setPath(stateModel.getPath());
+            model.getData().putAll(stateModel.getData());
+            model.getHeader().putAll(stateModel.getHeader());
+            modelState.setMetaModel(model);
+            extractorsList.get(name).accept(model);
 
         });
     }
@@ -78,6 +83,8 @@ public class Extractors {
     public static class ExtractorsBuilder {
 
         private final DocumentPort port;
+
+        private ExtractorListener extractorListener;
         private LinkedHashMap<String, Consumer<MetaModel>> extractorsList;
         private ModelState modelState;
 
@@ -102,17 +109,45 @@ public class Extractors {
 
             this.extractorsList.put(name, metalModel -> {
                 String selector = metalModel.getSelector();
-                port.connect(metalModel);
-                port.execute();
-                Document document = port.parse();
+                Document document = protocol(metalModel);
                 Element element = document.selectFirst(selector);
-                func.accept(name, modelState, element);
+                publishEvent(ExtractorListener.Type.EXTRACTOR_DOCUMENT, document);
+                try{
+                    func.accept(name, modelState, element);
+                } catch (RuntimeException e){
+                    publishEvent(ExtractorListener.Type.EXTRACTOR_ERROR_DOCUMENT, document);
+                    throw  new ExtractorException("Existe un problema en la ejecución del selector" , metalModel, document, e);
+                }
             });
             return this;
         }
 
         public Extractors buildExtractor(String name) {
             return buildExtractor(name, new HtmlSelector());
+        }
+
+        private Document protocol(MetaModel metalModel){
+            publishEvent(ExtractorListener.Type.CONNECTING, null);
+            try {
+                port.connect(metalModel);
+            } catch (DocumentException e){
+                publishEvent(ExtractorListener.Type.ERROR_CONNECTING, null);
+                throw e;
+            }
+            publishEvent(ExtractorListener.Type.EXECUTE, null);
+            try {
+                port.execute();
+            } catch (DocumentException e){
+                publishEvent(ExtractorListener.Type.ERROR_EXECUTE, null);
+                throw e;
+            }
+            publishEvent(ExtractorListener.Type.PARSING, null);
+            try {
+                return port.parse();
+            } catch (DocumentException e){
+                publishEvent(ExtractorListener.Type.ERROR_PARSING, null);
+                throw e;
+            }
         }
 
         public Extractors buildExtractor(String name, Selector<Element> func) {
@@ -122,15 +157,29 @@ public class Extractors {
 
             this.extractorsList.put(name, metalModel -> {
                 String selector = metalModel.getSelector();
-                port.connect(metalModel);
-                port.execute();
-                Document document = port.parse();
+                Document document = protocol(metalModel);
                 Element element = document.selectFirst(selector);
-                func.accept(name, modelState, element);
+                publishEvent(ExtractorListener.Type.EXTRACTOR_DOCUMENT, document);
+                try {
+                    func.accept(name, modelState, element);
+                } catch (RuntimeException e){
+                    publishEvent(ExtractorListener.Type.EXTRACTOR_ERROR_DOCUMENT, document);
+                    throw  new ExtractorException("Existe un problema en la ejecución del selector" , metalModel, document, e);
+                }
             });
             return build();
         }
 
+        public ExtractorsBuilder setExtractorListener(ExtractorListener extractorListener){
+            this.extractorListener = extractorListener;
+            return this;
+        }
+
+        private void publishEvent(ExtractorListener.Type type, Document document){
+            Optional.ofNullable(extractorListener).ifPresent(e ->
+                e.onEvent(type, modelState, document)
+            );
+        }
 
         public Extractors build() {
             return new Extractors(extractorsList, modelState);

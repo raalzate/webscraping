@@ -2,7 +2,10 @@ package co.com.techandsolve;
 
 import co.com.techandsolve.functional.example.BlogDevelopWebScraping;
 import co.com.techandsolve.functional.example.BlogTnSWebScraping;
+import co.com.techandsolve.functional.example.BlogTnSWebScrapingError;
+import co.com.techandsolve.scraping.ExtractorListener;
 import co.com.techandsolve.scraping.adapter.JSoupAdapter;
+import co.com.techandsolve.scraping.exception.ExtractorException;
 import co.com.techandsolve.scraping.scraper.Extractors;
 import co.com.techandsolve.scraping.scraper.MetaModel;
 import co.com.techandsolve.scraping.state.ModelState;
@@ -20,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.IntStream;
 
 import static org.mockito.Mockito.*;
@@ -89,6 +93,55 @@ public class ExtractorsTest {
     @Test(expected = NullPointerException.class)
     public void throwNullForJsonFile(){
         Extractors.builder(adapter).setState(new ModelState()).build().run("no-exist.json");
+    }
+
+    @Test
+    public void validateListener() throws IOException {
+        ArgumentCaptor<MetaModel> argument = ArgumentCaptor.forClass(MetaModel.class);
+
+        Document document = Jsoup.parse(getHtml());
+        doNothing().when(adapter).connect(argument.capture());
+        doNothing().when(adapter).execute();
+        when(adapter.parse()).thenReturn(document);
+
+        BlogTnSWebScraping blogTnSWebScraping = new BlogTnSWebScraping(adapter);
+        blogTnSWebScraping.setExtractorListener((name, modelState, document1) ->
+                System.out.println(name+" ==== "+modelState.getMetaModel())
+        );
+
+        ModelState modelState = new ModelState();
+        blogTnSWebScraping.build(modelState).run();
+
+        verify(adapter, times(5)).parse();
+    }
+
+    @Test
+    public void errorExtractor() throws IOException {
+        ArgumentCaptor<MetaModel> argument = ArgumentCaptor.forClass(MetaModel.class);
+        AtomicBoolean extError = new AtomicBoolean(false);
+        Document document = Jsoup.parse(getHtml());
+        doNothing().when(adapter).connect(argument.capture());
+        doNothing().when(adapter).execute();
+        when(adapter.parse()).thenReturn(document);
+
+        BlogTnSWebScrapingError blogTnSWebScraping = new BlogTnSWebScrapingError(adapter);
+
+        blogTnSWebScraping.setExtractorListener((name, modelState, document1) ->{
+                    if(ExtractorListener.Type.EXTRACTOR_ERROR_DOCUMENT.equals(name)){
+                        extError.set(true);
+                    }
+                }
+        );
+
+        ModelState modelState = new ModelState();
+        try{
+            blogTnSWebScraping.build(modelState).run();
+            Assert.fail();
+        } catch (ExtractorException e){
+            Assert.assertTrue(extError.get());
+            Assert.assertNotNull(e.getDocument());
+            Assert.assertNotNull(e.getMetaModel());
+        }
     }
 
     private String getHtml() throws IOException {
