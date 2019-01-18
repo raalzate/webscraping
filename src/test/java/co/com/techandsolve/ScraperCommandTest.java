@@ -1,111 +1,137 @@
 package co.com.techandsolve;
 
-import co.com.techandsolve.example.BlogDevelopWebScraping;
-import co.com.techandsolve.example.BlogTnSWebScraping;
-import co.com.techandsolve.scraping.Selector;
-import co.com.techandsolve.scraping.infra.*;
-import co.com.techandsolve.scraping.selector.ListHtmlSelector;
-import co.com.techandsolve.scraping.selector.TextSelector;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Element;
+import co.com.techandsolve.scraping.AuthWebScraping;
+import co.com.techandsolve.scraping.WebScraping;
+import co.com.techandsolve.scraping.scraper.Extractors;
+import co.com.techandsolve.scraping.scraper.MetaModel;
+import co.com.techandsolve.scraping.scraper.MetaModelUtils;
+import co.com.techandsolve.scraping.scraper.ScraperCommand;
+import co.com.techandsolve.scraping.state.ModelState;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
+import static org.mockito.Mockito.*;
+
+@RunWith(MockitoJUnitRunner.class)
 public class ScraperCommandTest {
 
+    @InjectMocks
+    private ScraperCommand scraperCommand;
+
+    @Mock
+    private AuthWebScraping authWebScraping;
+
+    @Mock
+    private WebScraping webScraping;
+
     @Test
-    public void blogTnS_JSoupAdapter() {
+    public void executeWithAuthWebScraping() {
+        Extractors extractors = mock(Extractors.class);
 
-        JSoupAdapter adapter = new JSoupAdapter();
-        ScraperCommand scraperCommand = new ScraperCommand();
-        Map<String, Object> result = scraperCommand.execute(new BlogTnSWebScraping(adapter));
+        doNothing().when(authWebScraping).login();
+        doNothing().when(authWebScraping).logout();
+        when(authWebScraping.build(any(ModelState.class))).thenReturn(extractors);
 
-        System.out.println(result);
+        Map<String, Object> data = scraperCommand.execute(authWebScraping);
+
+        InOrder order = inOrder(authWebScraping, extractors);
+
+        order.verify(authWebScraping).login();
+        order.verify(extractors).run(null);
+        order.verify(authWebScraping).logout();
+
+        assert data != null;
     }
 
     @Test
-    public void blogTnS_HtmlUnitAdapter() {
-        HtmlUnitAdapter adapter = new HtmlUnitAdapter();
-        ScraperCommand scraperCommand = new ScraperCommand();
-        Map<String, Object> result = scraperCommand.execute(new BlogTnSWebScraping(adapter));
+    public void executeWithWebScraping() {
+        Extractors extractors = mock(Extractors.class);
 
-        System.out.println(result);
-    }
+        when(webScraping.build(any(ModelState.class))).thenReturn(extractors);
 
-    @Test
-    public void blogTnS_Single() {
-        JSoupAdapter adapter = new JSoupAdapter();
-        MetaModel metaModel = new MetaModel("consult", "https://techandsolve.com/category/developer-e1533574812739/", "GET");
-        metaModel.setSelector(".panel-heading");
-        ScraperCommand scraperCommand = new ScraperCommand();
-        Map<String, Object> result = scraperCommand.execute(new BlogDevelopWebScraping(adapter), metaModel);
+        Map<String, Object> data = scraperCommand.execute(webScraping);
 
-        System.out.println(result);
+        verify(extractors).run(null);
 
+        assert data != null;
     }
 
 
     @Test
-    public void pronostico() {
-        String url = "https://www.google.com.co/search?q=pronostico+de+tiempo+medellin&oq=proostico+de+tiempo+medellin&aqs=chrome..69i57j0l5.9311j1j4&sourceid=chrome&ie=UTF-8";
-        MetaModel metaModel = new MetaModel("consult", url, "GET");
-        metaModel.setSelector("#wob_tm");
+    public void executeWithFile() {
+        Extractors extractors = mock(Extractors.class);
+        scraperCommand = new ScraperCommand("scraping.json");
 
-        Map<String, Object> result = new ScraperCommand()
-                .execute(modelState -> Extractors.builder(new JSoupAdapter())
-                        .setState(modelState)
-                        .buildExtractor("dato_c", new TextSelector()), metaModel);
+        when(webScraping.build(any(ModelState.class))).thenReturn(extractors);
 
-        System.out.println(result);
+        Map<String, Object> data = scraperCommand.execute(webScraping);
+
+        verify(extractors).run("scraping.json");
+
+        assert data != null;
 
     }
 
     @Test
-    public void noticias() {
-        String url = "https://www.elespectador.com/noticias";
-        MetaModel metaModel = new MetaModel("consult", url, "GET");
-        metaModel.setSelector(".field-group-html-element");
+    public void executeWithMetaModel() {
+        MetaModel metaModel = MetaModelUtils.getModel();
 
+        ArgumentCaptor<ModelState> argument = ArgumentCaptor.forClass(ModelState.class);
+        Extractors extractors = mock(Extractors.class);
 
-        Selector<Element> selector = new ListHtmlSelector()
-                .andThen((label, state, element) -> {
-                    Map<String, String> map = new HashMap<>();
-                    List<String> list = (List<String>) state.getExtra().get("dato_c");
+        scraperCommand = new ScraperCommand(metaModel);
 
-                    list.stream()
-                            .map(Jsoup::parse)
-                            .forEach(html -> map.put(
+        when(webScraping.build(argument.capture())).thenReturn(extractors);
 
-                                    Optional.ofNullable(html.selectFirst(".field--type-taxonomy-term-reference"))
-                                            .orElse(new Element("span"))
-                                            .text(),
+        Map<String, Object> data = scraperCommand.execute(webScraping);
 
-                                    Optional.ofNullable(html.selectFirst(".field--name-title"))
-                                            .orElse(new Element("span"))
-                                            .text()
-                            ));
+        verify(extractors).run(null);
 
-                    state.getExtra().clear();
-                    state.getExtra().putAll(map);
-                });
-
-        Map<String, Object> result = new ScraperCommand()
-                .execute(modelState -> Extractors.builder(new JSoupAdapter())
-                        .setState(modelState)
-                        .buildExtractor("dato_c", selector), metaModel);
-
-        result.forEach((title, content) -> {
-            System.out.println(title);
-            System.out.println("---------------------------");
-            System.out.println(content);
-            System.out.println();
-        });
-
+        assert argument.getValue().getMetaModel().equals(metaModel);
+        assert data != null;
     }
 
+    @Test
+    public void executeSingle() {
+        MetaModel metaModel = MetaModelUtils.getModel();
+
+        Extractors extractors = mock(Extractors.class);
+
+        when(webScraping.build(any(ModelState.class))).thenReturn(extractors);
+
+        Map<String, Object> data = scraperCommand.execute(webScraping, metaModel);
+
+        verify(extractors).runWithModel(metaModel);
+
+        assert data != null;
+    }
+
+    @Test
+    public void executeSingleWithAuthWebScraping() {
+        MetaModel metaModel = MetaModelUtils.getModel();
+
+        Extractors extractors = mock(Extractors.class);
+
+        doNothing().when(authWebScraping).login();
+        doNothing().when(authWebScraping).logout();
+        when(authWebScraping.build(any(ModelState.class))).thenReturn(extractors);
+
+        Map<String, Object> data = scraperCommand.execute(authWebScraping, metaModel);
+
+        InOrder order = inOrder(authWebScraping, extractors);
+
+        order.verify(authWebScraping).login();
+        order.verify(extractors).runWithModel(metaModel);
+        order.verify(authWebScraping).logout();
+
+        assert data != null;
+    }
 
 }
