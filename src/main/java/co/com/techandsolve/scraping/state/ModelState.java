@@ -1,7 +1,7 @@
 package co.com.techandsolve.scraping.state;
 
-import co.com.techandsolve.scraping.infra.MetaModel;
-import co.com.techandsolve.scraping.infra.ParseModel;
+import co.com.techandsolve.scraping.scraper.MetaModel;
+import co.com.techandsolve.scraping.scraper.MetaModelUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,11 +11,12 @@ import java.util.Optional;
  * Created by Raul .A Alzate raul.alzate@techandsolve.com on 20/12/2018.
  */
 public class ModelState {
+
+    private final ExtraData extraData;
     private MetaModel model;
-    private ExtraData extraData;
 
     public ModelState() {
-        this.model = ParseModel.getModel();
+        this.model = MetaModelUtils.getModel();
         this.extraData = new ExtraData();
     }
 
@@ -23,8 +24,7 @@ public class ModelState {
         return model;
     }
 
-
-    public ExtraData setStateModel(MetaModel model) {
+    public ExtraData setMetaModel(MetaModel model) {
         Optional.ofNullable(model).ifPresent(m -> this.model = m);
         return extraData;
     }
@@ -33,10 +33,10 @@ public class ModelState {
         return extraData.extra;
     }
 
-    public static class ExtraData {
+    public static final class ExtraData {
         private Map<String, Object> extra;
 
-        ExtraData() {
+        private ExtraData() {
             this.extra = new HashMap<>();
         }
 
@@ -45,5 +45,6 @@ public class ModelState {
             return this;
         }
     }
+
 
 }
